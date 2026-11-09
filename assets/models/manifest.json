@@ -1,0 +1,64 @@
+{
+ "models": {
+  "fc515": {
+   "file": "test-truck.glb",
+   "glbtest": true,
+   "note": "GLB PIPELINE TEST ONLY (flag kot401.glbtest, default OFF): stylised low-poly test rig, 2,724 tris, real-metre scale, tractor+trailer in one file. Loaded only when the glbtest flag is on; otherwise this entry is inert and the slot stays procedural. See SPEC.md in the staging folder."
+  }
+ },
+ "nodeContract": {
+  "detailNodes": "Nodes whose name starts with Detail_ are hidden beyond 300 m (LOD tier 2); interior nodes named Interior_ beyond 170 m.",
+  "glassMaterial": "Cab glass material named Glass \u2014 hidden automatically in the first-person cabin camera.",
+  "lightMaterials": "Lamp materials named exactly LightHead, LightBrake, LightIndL, LightIndR, LightRev, LightMarker \u2014 the game drives their emissive intensity from real brake/indicator/reverse/marker state.",
+  "paintMaterial": "Main cab paint material named Paint \u2014 the livery/company system recolours it.",
+  "wheels": "Separate nodes named WheelFL, WheelFR (steer axle), WheelRL, WheelRR, WheelRL2, WheelRR2 (drive tandems), trailer: WheelTL, WheelTR, WheelTL2, WheelTR2. Pivot exactly at hub centre, no baked rotation; the game wraps them for steering (front pair) and spin (all)."
+ },
+ "note": "King of the 401 realistic-model slots. NO models are installed yet: every slot falls back to the in-game procedural visuals, which were upgraded in the crafted-model rebuild (extruded cab/hood/sleeper profiles, per-model sleeper + trim variants, lathe-profiled wheels, ribbed dry-van sides, full trailer hardware) \u2014 still procedural, still no GLB. To install a model: copy its .glb into this folder and add an entry under \"models\" keyed by slot id, e.g. \"fc515\": { \"file\": \"fc515.glb\" }. Files must be self-contained GLB (embedded textures), glTF 2.0, no Draco/meshopt compression, metres, +Z forward, origin on the ground at the fifth-wheel datum (tractors) or the kingpin (trailer).",
+ "required": [
+  {
+   "lod": "LOD1 18000 tris, LOD2 6000 tris as separate GLBs fc515_lod1.glb / fc515_lod2.glb (optional)",
+   "polyBudget": 45000,
+   "slot": "fc515",
+   "targetLengthM": 7.6,
+   "textureRes": "2048 cab atlas, 1024 detail",
+   "vehicle": "Freightliner Cascadia-style modern aero sleeper tractor (flagship)"
+  },
+  {
+   "polyBudget": 45000,
+   "slot": "tn700 / kd350",
+   "targetLengthM": 8.1,
+   "textureRes": "2048 cab atlas, 1024 detail",
+   "vehicle": "Long-nose classic conventional sleeper tractor (e.g. 379/W900 style)"
+  },
+  {
+   "polyBudget": 40000,
+   "slot": "np420 / house",
+   "targetLengthM": 7.4,
+   "textureRes": "2048 cab atlas, 1024 detail",
+   "vehicle": "Modern standard conventional day-cab / short-sleeper tractor"
+  },
+  {
+   "polyBudget": 40000,
+   "slot": "vt530 / np610",
+   "targetLengthM": 7.6,
+   "textureRes": "2048 cab atlas, 1024 detail",
+   "vehicle": "Modern aero highway tractor (generic fleet aero)"
+  },
+  {
+   "polyBudget": 30000,
+   "slot": "sysco / erb / transpro / northernhaul / canuck",
+   "targetLengthM": 7.6,
+   "textureRes": "1024 atlas (distance traffic)",
+   "vehicle": "AI hauler tractors \u2014 same three classes above, fleet paint variants"
+  },
+  {
+   "polyBudget": 12000,
+   "slot": "trailer53",
+   "targetLengthM": 16.2,
+   "textureRes": "2048 side atlas (existing canvas wraps are drawn at 2048x384)",
+   "vehicle": "53 ft dry-van trailer with livery-artwork UV space on both sides and rear doors"
+  }
+ ],
+ "sourcing": "Commission or buy with a written licence covering redistribution inside a shipped game (e.g. a marketplace 'game distribution' licence), or CC0/CC-BY with the licence text + author credit stored beside the file. Proof needed per file: licence name, source URL, author, and the licence text or receipt kept in this folder as <slot>.LICENSE.txt. Do NOT use ripped game assets, Sketchfab downloads without a licence grant, or AI-converted models of unknown provenance.",
+ "version": 1
+}
