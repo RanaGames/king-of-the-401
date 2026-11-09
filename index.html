@@ -25641,8 +25641,11 @@ TRKACCT.regression = function(){
      MENU3 — CINEMATIC TORONTO MAIN MENU. Scoped under body.menu3.
      The plate replaces menu2's keyart atmosphere under menu3 only;
      menu2's rotate prompt + ori-frame gate are untouched. Injected
-     nodes (#menu3Plate, #menu3Chips, #menu3Banner, rail buttons,
-     #menu3Nav) are menu3-owned and removed on flag-off. No canvas, no
+     nodes (#menu3Plate, #menu3Chips, #menu3Banner, #menu3Nav)
+     are menu3-owned and removed on flag-off. STREAMLINE revision:
+     one slim top strip, one compact right column, no left rail;
+     Help / Sound / Statistics / Cloud Save live in the bottom nav
+     and the plate's skyline, gantry and foreground semi stay clear. No canvas, no
      JS loop, no per-frame cost; blur only on chips/cards/nav.
      ===================================================================== */
   body.menu3 #menu2Atmo{ display:none !important; }
@@ -25664,7 +25667,7 @@ TRKACCT.regression = function(){
     position:relative; z-index:2; flex:1 1 auto;
     width:100%; max-width:none; height:100dvh; max-height:100dvh; overflow-y:auto;
     display:grid; grid-template-columns:minmax(0, 1fr);
-    row-gap:10px; column-gap:22px; align-content:start;
+    row-gap:8px; column-gap:22px; align-content:start;
     padding:calc(12px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(86px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
     background:transparent; border:none; border-radius:0; box-shadow:none;
     -webkit-backdrop-filter:none; backdrop-filter:none;
@@ -25672,27 +25675,27 @@ TRKACCT.regression = function(){
   }
   @keyframes menu3In{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
 
-  /* portrait / narrow placement (single column, mock order) */
-  body.menu3 #menu3Chips{ grid-column:1; grid-row:1; }
+  /* portrait / narrow placement (single column, mock order).
+     Placement selectors carry #menuWrap so they outrank menu2's
+     .menuBtn:nth-of-type / .menuCareer grid rules (body carries both
+     menu2 and menu3 classes; a bare-id rule loses that cascade and
+     the streamline layout silently collapses back to menu2's). */
+  body.menu3 #menuWrap #menu3Chips{ grid-column:1; grid-row:1; }
   body.menu3 #menuWrap .menuCard h1{ grid-column:1; grid-row:2; }
-  body.menu3 #menu3Banner{ grid-column:1; grid-row:3; }
+  body.menu3 #menuWrap #menu3Banner{ grid-column:1; grid-row:3; }
   body.menu3 #menuWrap .menuCard .sub{ grid-column:1; grid-row:4; }
-  body.menu3 #btnMenuStart{ grid-column:1; grid-row:5; }
-  body.menu3 #btnMenuConvoy{ grid-column:1; grid-row:6; }
-  body.menu3 #btnMenuOnline{ grid-column:1; grid-row:7; }
-  body.menu3 #btnMenuTruck{ grid-column:1; grid-row:8; }
-  body.menu3 #btnMenuCareer{ grid-column:1; grid-row:9; }
-  body.menu3 #btnMenuHelp{ grid-column:1; grid-row:10; }
-  body.menu3 #btnMenuSound{ grid-column:1; grid-row:11; }
-  body.menu3 #menu3RailStats{ grid-column:1; grid-row:12; }
-  body.menu3 #menu3RailCloud{ grid-column:1; grid-row:13; }
-  body.menu3 #menuCareerLine{ grid-column:1; grid-row:14; }
+  body.menu3 #menuWrap #btnMenuStart{ grid-column:1; grid-row:5; }
+  body.menu3 #menuWrap #btnMenuConvoy{ grid-column:1; grid-row:6; }
+  body.menu3 #menuWrap #btnMenuOnline{ grid-column:1; grid-row:7; }
+  body.menu3 #menuWrap #btnMenuTruck{ grid-column:1; grid-row:8; }
+  body.menu3 #menuWrap #btnMenuCareer{ grid-column:1; grid-row:9; }
+  body.menu3 #menuWrap #menuCareerLine{ grid-column:1; grid-row:10; }
 
   /* ---------- logo: metallic silver wordmark + crown + red banner ---------- */
   body.menu3 #menuWrap .menuCard h1{
     font-family:"Avenir Next Condensed","Arial Narrow","Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
-    font-size:clamp(38px, 6vw, 58px); line-height:.98; letter-spacing:.02em;
-    text-align:left; margin:0; padding-top:30px; position:relative; align-self:end;
+    font-size:clamp(34px, 5.2vw, 52px); line-height:.98; letter-spacing:.02em;
+    text-align:left; margin:0; padding-top:20px; position:relative; align-self:end;
     filter:drop-shadow(0 3px 12px rgba(0,0,0,.65));
   }
   body.menu3 #menuWrap .menuCard h1::before{
@@ -25721,25 +25724,25 @@ TRKACCT.regression = function(){
   }
 
   /* ---------- chips: real data only, filled by the companion script ---------- */
-  body.menu3 #menu3Chips{ display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; align-content:start; }
+  body.menu3 #menu3Chips{ display:flex; flex-wrap:nowrap; gap:5px; justify-content:flex-end; align-content:start; }
   body.menu3 .m3Chip{
-    min-height:48px; min-width:118px; display:flex; flex-direction:column; justify-content:center; gap:1px;
-    padding:7px 12px; border-radius:10px; color:#eaf1f8;
+    min-height:40px; min-width:0; flex:1 1 auto; display:flex; flex-direction:column; justify-content:center; gap:1px;
+    padding:4px 8px; border-radius:8px; color:#eaf1f8;
     background:linear-gradient(180deg, rgba(15,28,45,.86), rgba(8,15,25,.92));
     border:1px solid rgba(120,170,230,.32); box-shadow:0 6px 18px rgba(0,0,0,.42);
     -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
   }
-  body.menu3 .m3ChipLab{ font-size:9.5px; font-weight:800; letter-spacing:.15em; color:#8fb6dd; text-transform:uppercase; }
-  body.menu3 .m3ChipVal{ font-size:16px; font-weight:800; line-height:1.15; white-space:nowrap; }
-  body.menu3 .m3ChipSub{ font-size:10.5px; font-weight:600; color:#9fb4c8; white-space:nowrap; }
+  body.menu3 .m3ChipLab{ font-size:9px; font-weight:800; letter-spacing:.14em; color:#8fb6dd; text-transform:uppercase; }
+  body.menu3 .m3ChipVal{ font-size:13.5px; font-weight:800; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.menu3 .m3ChipSub{ font-size:10px; font-weight:600; color:#9fb4c8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   body.menu3 #m3ChipCash .m3ChipVal{ color:#ffd07a; }
-  body.menu3 .m3Bar{ height:5px; min-width:112px; border-radius:3px; background:rgba(255,255,255,.14); overflow:hidden; margin-top:3px; }
+  body.menu3 .m3Bar{ height:4px; min-width:64px; border-radius:3px; background:rgba(255,255,255,.14); overflow:hidden; margin-top:3px; }
   body.menu3 .m3Bar i{ display:block; height:100%; width:0; border-radius:3px; background:linear-gradient(90deg, #f59e0b, #ffc65c); transition:width .25s ease; }
 
   /* ---------- right-column cards (existing buttons, CSS only) ---------- */
   body.menu3 #menuWrap .menuBtn{
-    transform:none; animation:none; margin:0; min-height:56px; border-radius:10px;
-    padding:11px 16px; text-align:left; color:#eaf1f8; font-size:20px;
+    transform:none; animation:none; margin:0; min-height:46px; border-radius:10px;
+    padding:7px 12px; text-align:left; color:#eaf1f8; font-size:17px;
     background:linear-gradient(180deg, rgba(17,32,50,.90), rgba(9,17,28,.94));
     border:1px solid rgba(120,170,230,.30); box-shadow:0 8px 22px rgba(0,0,0,.45);
     -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
@@ -25749,52 +25752,34 @@ TRKACCT.regression = function(){
   body.menu3 #menuWrap .menuBtn:hover{ background:linear-gradient(180deg, rgba(28,48,72,.94), rgba(13,24,38,.96)); border-color:rgba(150,195,245,.5); }
   body.menu3 #menuWrap .menuBtn:active{ transform:scale(.98); }
   body.menu3 #menuWrap .menuBtn:focus-visible{ outline:2px solid rgba(255,179,64,.85); outline-offset:2px; }
-  body.menu3 #menuWrap .menuBtn .mbSub{ color:#9fb4c8; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; }
+  body.menu3 #menuWrap .menuBtn .mbSub{ color:#9fb4c8; font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
   body.menu3 #menuWrap #btnMenuConvoy, body.menu3 #menuWrap #btnMenuOnline,
-  body.menu3 #menuWrap #btnMenuTruck, body.menu3 #menuWrap #btnMenuCareer{ position:relative; padding-right:40px; }
+  body.menu3 #menuWrap #btnMenuTruck, body.menu3 #menuWrap #btnMenuCareer{ position:relative; padding-right:36px; }
   body.menu3 #menuWrap #btnMenuConvoy::after, body.menu3 #menuWrap #btnMenuOnline::after,
   body.menu3 #menuWrap #btnMenuTruck::after, body.menu3 #menuWrap #btnMenuCareer::after{
-    content:"\203A"; position:absolute; right:15px; top:50%; transform:translateY(-54%);
+    content:"\203A"; position:absolute; right:13px; top:50%; transform:translateY(-54%);
     font-size:27px; font-weight:400; color:rgba(160,200,245,.8); pointer-events:none;
   }
   /* START RUN: gold primary with its static subtitle */
   body.menu3 #menuWrap .menuBtn.primary{
-    min-height:66px; flex-direction:column; flex-wrap:wrap; align-items:center; justify-content:center; gap:2px;
+    min-height:54px; flex-direction:column; flex-wrap:wrap; align-items:center; justify-content:center; gap:2px;
     background:linear-gradient(180deg, #ffc65c, #f59e0b); border-color:rgba(255,198,92,.92); color:#191104;
-    font-size:23px; letter-spacing:.06em; text-align:center; padding-right:16px;
+    font-size:20px; letter-spacing:.06em; text-align:center; padding-right:16px;
     box-shadow:0 10px 28px rgba(255,179,64,.32), 0 6px 18px rgba(0,0,0,.45);
   }
   body.menu3 #menuWrap .menuBtn.primary:hover{ background:linear-gradient(180deg, #ffd07a, #ffa51f); }
-  body.menu3 #menuWrap #btnMenuStart{ position:relative; padding-bottom:25px; }
+  body.menu3 #menuWrap #btnMenuStart{ position:relative; padding-bottom:22px; }
   body.menu3 #menuWrap #btnMenuStart .m3StartSub{
-    position:absolute; left:8px; right:8px; bottom:7px; display:block; text-align:center;
+    position:absolute; left:8px; right:8px; bottom:6px; display:block; text-align:center;
     font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
-    font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:rgba(25,17,4,.72);
+    font-size:10.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:rgba(25,17,4,.72);
   }
 
-  /* ---------- left rail rows (Help / Sound restyled + injected rows) ---------- */
-  body.menu3 #menuWrap #btnMenuHelp, body.menu3 #menuWrap #btnMenuSound{
-    min-height:50px; font-size:16.5px; border-radius:10px; padding:9px 14px;
-    background:linear-gradient(180deg, rgba(13,24,39,.88), rgba(8,15,24,.92));
-    border:1px solid rgba(120,170,230,.24);
-  }
-  body.menu3 #menuWrap #btnMenuHelp .mbSub, body.menu3 #menuWrap #btnMenuSound .mbSub{ font-size:10.5px; }
-  body.menu3 .menu3RailBtn{
-    min-height:50px; display:flex; align-items:center; gap:11px; width:100%;
-    padding:9px 14px; border-radius:10px; cursor:pointer; text-align:left; color:#e2ecf6;
-    background:linear-gradient(180deg, rgba(13,24,39,.88), rgba(8,15,24,.92));
-    border:1px solid rgba(120,170,230,.24); box-shadow:0 6px 18px rgba(0,0,0,.4);
-    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
-    font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
-    transition:background .2s ease, border-color .2s ease, transform .15s ease;
-  }
-  body.menu3 .menu3RailBtn:hover{ background:linear-gradient(180deg, rgba(24,42,64,.92), rgba(11,21,33,.95)); border-color:rgba(150,195,245,.45); }
-  body.menu3 .menu3RailBtn:active{ transform:scale(.98); }
-  body.menu3 .menu3RailBtn:focus-visible{ outline:2px solid rgba(255,179,64,.85); outline-offset:2px; }
-  body.menu3 .m3RailIco{ font-size:18px; flex:none; }
-  body.menu3 .m3RailTx{ display:flex; flex-direction:column; gap:0; min-width:0; }
-  body.menu3 .m3RailTx b{ font-size:15.5px; font-weight:700; letter-spacing:.02em; }
-  body.menu3 .m3RailTx i{ font-style:normal; font-size:10.5px; font-weight:600; color:#9fb4c8; text-transform:uppercase; letter-spacing:.05em; }
+  /* ---------- STREAMLINE: the left rail is gone. #btnMenuHelp and
+     #btnMenuSound stay in the DOM with handlers untouched, visually
+     folded away under menu3; the bottom nav carries Help, Sound,
+     Statistics and Cloud Save items that reach the same places. --- */
+  body.menu3 #menuWrap #btnMenuHelp, body.menu3 #menuWrap #btnMenuSound{ display:none; }
 
   /* ---------- career line: slim dim strip above the nav ---------- */
   body.menu3 #menuWrap .menuCareer{
@@ -25807,7 +25792,7 @@ TRKACCT.regression = function(){
 
   /* ---------- bottom nav (menu3-owned, lives inside #menuWrap) ---------- */
   body.menu3 #menu3Nav{
-    position:fixed; left:0; right:0; bottom:0; z-index:4; display:flex;
+    position:fixed; left:0; right:0; bottom:0; z-index:4; display:flex; flex-wrap:wrap;
     padding-bottom:env(safe-area-inset-bottom);
     background:linear-gradient(180deg, rgba(10,19,31,.93), rgba(6,11,18,.97));
     border-top:1px solid rgba(120,170,230,.26);
@@ -25815,53 +25800,52 @@ TRKACCT.regression = function(){
     box-shadow:0 -8px 26px rgba(0,0,0,.45);
   }
   body.menu3 .m3NavBtn{
-    flex:1 1 0; min-height:54px; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    flex:1 1 52px; min-height:46px; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
     background:none; border:none; border-top:2px solid transparent; cursor:pointer;
     color:#9fb4c8; font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
-    font-size:11px; font-weight:700; letter-spacing:.06em; padding:6px 2px 7px;
+    font-size:10px; font-weight:700; letter-spacing:.05em; padding:4px 1px 5px;
     transition:color .18s ease, transform .15s ease;
   }
-  body.menu3 .m3NavBtn .m3NavIco{ font-size:19px; line-height:1.1; }
+  body.menu3 .m3NavBtn .m3NavIco{ font-size:16px; line-height:1.1; }
   body.menu3 .m3NavBtn:hover{ color:#d7e6f5; }
   body.menu3 .m3NavBtn:active{ transform:scale(.96); }
   body.menu3 .m3NavBtn:focus-visible{ outline:2px solid rgba(255,179,64,.85); outline-offset:-2px; }
   body.menu3 .m3NavBtn.on{ color:#ffd07a; border-top-color:#ffb340; }
 
-  /* ---------- LANDSCAPE-FIRST: logo+rail left, chips+cards right ---------- */
+  /* ---------- LANDSCAPE-FIRST: slim top strip (logo left, chips right),
+     one compact button column right, centre-left plate fully clear --- */
   @media (orientation:landscape) and (min-width:700px){
     body.menu3 #menuWrap .menuCard{
-      grid-template-columns:300px minmax(0, 1fr) min(400px, 38vw);
-      grid-template-rows:repeat(9, auto) 1fr;
-      padding:calc(14px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+      grid-template-columns:minmax(0, 1fr) min(372px, 36vw);
+      grid-template-rows:repeat(6, auto) 1fr;
+      padding:calc(14px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(70px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
     }
-    body.menu3 #menuWrap .menuCard h1{ grid-column:1; grid-row:1; font-size:clamp(40px, 4.6vw, 56px); }
-    body.menu3 #menu3Banner{ grid-column:1; grid-row:2; }
+    body.menu3 #menuWrap .menuCard h1{ grid-column:1; grid-row:1; font-size:clamp(34px, 4vw, 48px); }
+    body.menu3 #menuWrap #menu3Banner{ grid-column:1; grid-row:2; }
     body.menu3 #menuWrap .menuCard .sub{ grid-column:1; grid-row:3; }
-    body.menu3 #btnMenuHelp{ grid-column:1; grid-row:4; }
-    body.menu3 #btnMenuSound{ grid-column:1; grid-row:5; }
-    body.menu3 #menu3RailStats{ grid-column:1; grid-row:6; }
-    body.menu3 #menu3RailCloud{ grid-column:1; grid-row:7; }
-    body.menu3 #menuCareerLine{ grid-column:1; grid-row:10; }
-    body.menu3 #menu3Chips{ grid-column:2 / 4; grid-row:1; align-self:start; }
-    body.menu3 #btnMenuStart{ grid-column:3; grid-row:2; }
-    body.menu3 #btnMenuConvoy{ grid-column:3; grid-row:3; }
-    body.menu3 #btnMenuOnline{ grid-column:3; grid-row:4; }
-    body.menu3 #btnMenuTruck{ grid-column:3; grid-row:5; }
-    body.menu3 #btnMenuCareer{ grid-column:3; grid-row:6; }
+    body.menu3 #menuWrap #menuCareerLine{ grid-column:2; grid-row:7; align-self:end; }
+    body.menu3 #menuWrap #menu3Chips{ grid-column:2; grid-row:1; align-self:start; }
+    body.menu3 #menuWrap #btnMenuStart{ grid-column:2; grid-row:2; }
+    body.menu3 #menuWrap #btnMenuConvoy{ grid-column:2; grid-row:3; }
+    body.menu3 #menuWrap #btnMenuOnline{ grid-column:2; grid-row:4; }
+    body.menu3 #menuWrap #btnMenuTruck{ grid-column:2; grid-row:5; }
+    body.menu3 #menuWrap #btnMenuCareer{ grid-column:2; grid-row:6; }
   }
   /* short landscape phones: compact rows so the stack stays reachable */
   @media (orientation:landscape) and (max-height:540px){
     body.menu3 #menuWrap .menuCard{ row-gap:7px; padding-top:calc(8px + env(safe-area-inset-top)); }
-    body.menu3 #menuWrap .menuBtn{ min-height:48px; font-size:18px; }
-    body.menu3 #menuWrap .menuBtn.primary{ min-height:56px; }
-    body.menu3 #menuWrap #btnMenuHelp, body.menu3 #menuWrap #btnMenuSound, body.menu3 .menu3RailBtn{ min-height:44px; }
-    body.menu3 .m3NavBtn{ min-height:48px; }
+    body.menu3 #menuWrap .menuBtn{ min-height:44px; font-size:17px; }
+    body.menu3 #menuWrap .menuBtn.primary{ min-height:52px; }
+    body.menu3 .m3NavBtn{ min-height:44px; }
+  }
+  @media (orientation:portrait){
+    body.menu3 #menu3Plate{ background-position:26% 50%; }
   }
   @media (orientation:portrait) and (pointer:coarse){
-    body.menu3 #menuWrap .menuCard{ padding-top:calc(68px + env(safe-area-inset-top)); }
+    body.menu3 #menuWrap .menuCard{ padding-top:calc(68px + env(safe-area-inset-top)); padding-bottom:calc(112px + env(safe-area-inset-bottom)); }
   }
   @media (prefers-reduced-motion: reduce){
-    body.menu3 #menuWrap .menuCard, body.menu3 #menuWrap .menuBtn, body.menu3 .menu3RailBtn, body.menu3 .m3NavBtn, body.menu3 .m3Bar i{
+    body.menu3 #menuWrap .menuCard, body.menu3 #menuWrap .menuBtn, body.menu3 .m3NavBtn, body.menu3 .m3Bar i{
       animation:none !important; transition:none !important;
     }
   }
@@ -25875,8 +25859,8 @@ TRKACCT.regression = function(){
        class and every injected element; the menu2 presentation
        returns EXACTLY (menu2's module is untouched).
    (b) Injects #menu3Plate (background plate), #menu3Banner,
-       #menu3Chips (real-data stat chips), two rail buttons and
-       #menu3Nav (bottom nav) — all menu3-owned, appended only.
+       #menu3Chips (real-data stat chips), #menu3Nav (bottom nav, including the
+       folded-in Help / Sound / Statistics / Cloud Save items) — all menu3-owned, appended only.
    (c) Chips are READ-ONLY views of live data (WALLET / STAGES /
        stageIdx / P5), filled on init, on a capture-replace wrap of
        showMenu(), and on a MutationObserver over #menuWrap's class.
@@ -25914,17 +25898,6 @@ TRKACCT.regression = function(){
     chip.appendChild(lab); chip.appendChild(val); chip.appendChild(sub);
     chip._val = val; chip._sub = sub;
     return chip;
-  }
-  function mkRail(id, icon, title, sub, fn){
-    var b = el('button', 'menu3RailBtn', id); b.type = 'button';
-    var ico = el('span', 'm3RailIco'); ico.textContent = icon;
-    var tx = el('span', 'm3RailTx');
-    var t = document.createElement('b'); t.textContent = title;
-    var s = document.createElement('i'); s.textContent = sub;
-    tx.appendChild(t); tx.appendChild(s);
-    b.appendChild(ico); b.appendChild(tx);
-    b.addEventListener('click', fn);
-    return b;
   }
   function mkNav(id, icon, label, fn, active){
     var b = el('button', 'm3NavBtn' + (active ? ' on' : ''), id); b.type = 'button';
@@ -25967,12 +25940,6 @@ TRKACCT.regression = function(){
       chips.appendChild(mkChip('m3ChipCompany', 'Company'));
       card.appendChild(chips);
     }
-    if (!document.getElementById('menu3RailStats')){
-      card.appendChild(mkRail('menu3RailStats', '\u{1F4CA}', 'Statistics', 'Corridor Champions boards', function(){ bizGo('online'); }));
-    }
-    if (!document.getElementById('menu3RailCloud')){
-      card.appendChild(mkRail('menu3RailCloud', '\u2601', 'Cloud Save', 'Online company profile', function(){ bizGo('online'); }));
-    }
     if (!document.getElementById('menu3Nav')){
       var nav = el('nav', null, 'menu3Nav');
       nav.setAttribute('aria-label', 'Main menu');
@@ -25992,12 +25959,22 @@ TRKACCT.regression = function(){
         if (typeof initAudio === 'function') initAudio();
         if (window.K401 && window.K401.worldMap && typeof window.K401.worldMap.open === 'function') window.K401.worldMap.open();
       }, false));
+      nav.appendChild(mkNav('m3NavStats', '\u{1F4CA}', 'Stats', function(){ bizGo('online'); }, false));
+      nav.appendChild(mkNav('m3NavCloud', '\u2601', 'Cloud', function(){ bizGo('online'); }, false));
+      nav.appendChild(mkNav('m3NavHelp', '\u2753', 'Help', function(){
+        if (typeof initAudio === 'function') initAudio();
+        var h = document.getElementById('btnMenuHelp'); if (h) h.click();
+      }, false));
+      nav.appendChild(mkNav('m3NavSound', '\u{1F50A}', 'Sound', function(){
+        if (typeof initAudio === 'function') initAudio();
+        var s = document.getElementById('btnMenuSound'); if (s) s.click();
+      }, false));
       wrap.appendChild(nav);
     }
     fillChips();
   }
   function removeEls(){
-    ['menu3Plate', 'menu3Banner', 'menu3Chips', 'menu3RailStats', 'menu3RailCloud', 'menu3Nav', 'menu3StartSub'].forEach(function(id){
+    ['menu3Plate', 'menu3Banner', 'menu3Chips', 'menu3Nav', 'menu3StartSub'].forEach(function(id){
       var n = document.getElementById(id);
       if (n && n.parentNode) n.parentNode.removeChild(n);
     });
@@ -26068,13 +26045,34 @@ TRKACCT.regression = function(){
       checks['chip' + i + 'FilledOrHidden'] = !onNow || (!!c && (c.style.display === 'none' || c._val.textContent.length > 0));
     });
     checks.sevenButtons = ['btnMenuStart','btnMenuConvoy','btnMenuOnline','btnMenuTruck','btnMenuCareer','btnMenuHelp','btnMenuSound'].every(function(id){ return !!document.getElementById(id); });
-    checks.railAndNavPresent = !onNow || (!!document.getElementById('menu3RailStats') && !!document.getElementById('menu3RailCloud') &&
-      !!document.getElementById('menu3Nav') && document.querySelectorAll('#menu3Nav .m3NavBtn').length === 6);
+    checks.navCarriesAllDestinations = !onNow || (!!document.getElementById('menu3Nav') &&
+      document.querySelectorAll('#menu3Nav .m3NavBtn').length === 10 &&
+      !!document.getElementById('m3NavStats') && !!document.getElementById('m3NavCloud') &&
+      !!document.getElementById('m3NavHelp') && !!document.getElementById('m3NavSound'));
+    checks.railColumnAbsent = !document.getElementById('menu3RailStats') && !document.getElementById('menu3RailCloud') &&
+      cssText().indexOf('menu3RailBtn') < 0 && cssText().indexOf('#btnMenuSound{ display:none') >= 0;
+    checks.topStripSlim = cssText().indexOf('min-height:40px') >= 0 && cssText().indexOf('min(372px, 36vw)') >= 0 &&
+      cssText().indexOf('flex-wrap:nowrap') >= 0;
+    checks.placementsOutrankMenu2 = ['#menuWrap #menu3Chips', '#menuWrap #btnMenuStart', '#menuWrap #btnMenuConvoy',
+      '#menuWrap #btnMenuOnline', '#menuWrap #btnMenuTruck', '#menuWrap #btnMenuCareer', '#menuWrap #menuCareerLine'].every(function(s){
+        return cssText().indexOf(s) >= 0;
+      });
+    checks.truckRegionClear = (function(){
+      var c = cssText(), i = c.indexOf('orientation:landscape) and (min-width:700px)');
+      if (i < 0) return false;
+      var seg = c.slice(i, c.indexOf('@media', i + 10));
+      return seg.indexOf('#menuCareerLine{ grid-column:2; grid-row:7') >= 0 &&
+        seg.indexOf('grid-column:1; grid-row:4') < 0 && seg.indexOf('grid-column:1; grid-row:5') < 0 &&
+        seg.indexOf('grid-column:1; grid-row:6') < 0 && seg.indexOf('grid-column:1; grid-row:7') < 0;
+    })();
     checks.deepLinkTargets = ['contracts', 'fleet', 'company', 'online'].every(function(t){
       return !!document.querySelector('.bizTab[data-btab="' + t + '"]');
     }) && !!document.getElementById('btnMenuTruck') && !!(window.K401 && window.K401.worldMap);
     checks.startSubPresent = !onNow || !!document.getElementById('menu3StartSub');
     checks.careerLinePresent = !!document.getElementById('menuCareerLine');
+    checks.careerLineRelocated = checks.careerLinePresent &&
+      cssText().indexOf('#menuWrap #menuCareerLine{ grid-column:2; grid-row:7') >= 0 &&
+      cssText().indexOf('#menuWrap #menuCareerLine{ grid-column:1; grid-row:10') >= 0;
     checks.noSaveKeysTouched = (typeof SAVE_KEYS === 'undefined') || SAVE_KEYS.indexOf('kot401.menu3') < 0;
     checks.cssScoped = cssText().indexOf('body.menu3') >= 0;
     var ok = Object.keys(checks).every(function(k){ return checks[k] === true; });
@@ -26470,5 +26468,151 @@ phys2InjectSettings();
 </script>
 
 
+
+<!-- UI-0 + UI-1 — SHARED TOKENS + DELIVERY RESULTS POLISH (UI Polish plan).
+     Appended wrap-don't-edit modules only; nothing existing is edited.
+     Everything is scoped under body.menu3, so kot401.menu3 = 'off'
+     restores the exact prior presentation. No publish without the
+     user's word. -->
+<style id="menu3Tokens">
+  /* =====================================================================
+     UI-0 — SHARED TOKEN FOUNDATION (UI Polish plan, mechanism §1–2).
+     One token layer for the whole polish program, declared on
+     body.menu3 so it rides the existing kot401.menu3 flag (a bare
+     :root redefinition could not be flag-gated).
+     · Existing names are re-declared with TODAY'S VALUES VERBATIM —
+       taken from the base :root block, the hybrid HUD :root block,
+       and G6's asserted token table (g6Tokens()/tokensExact), which
+       all agree. Nothing shifts by accident; G6's own table is never
+       edited by this layer.
+     · MENU3 deltas only: --hairline (alias-grade of --plate-line),
+       --panel-bg / --panel-bg2 (the LANDED menu3 module's navy glass
+       gradients: card, then chip), --r-panel / --r-card (the radius
+       scale — 12/8, the same values G6 asserts), --t-ui (200 ms,
+       inside the plan's 150–250 ms band).
+     · NEVER declared here (JS-owned): --ctl-scale, --ctl-op, --kb.
+       Left dead on purpose (documented, not revived): --glow,
+       --hud-scale.
+     ===================================================================== */
+  body.menu3{
+    --ink:#eef3f6;
+    --dim:#9fb2bd;
+    --amber:#ffb340;
+    --green:#37d67a;
+    --red:#ff5a4e;
+    --blue:#3f9be0;
+    --plate:rgba(8,13,17,.78);
+    --plate-line:rgba(255,255,255,.14);
+    --glass:rgba(7,14,24,.82);
+    --glass2:rgba(10,20,34,.92);
+    --line2:rgba(110,180,255,.28);
+    --hairline:rgba(255,255,255,.14);
+    --panel-bg:linear-gradient(180deg, rgba(17,32,50,.90), rgba(9,17,28,.94));
+    --panel-bg2:linear-gradient(180deg, rgba(15,28,45,.86), rgba(8,15,25,.92));
+    --r-panel:12px;
+    --r-card:8px;
+    --t-ui:200ms;
+  }
+</style>
+<style id="uiPolishStyle">
+  /* =====================================================================
+     UI-1 — DELIVERY RESULTS (#doneWrap) on the token layer.
+     Presentation only: the panel skeleton is static HTML and its
+     payout table is id-written by deliver() and its wrappers — no
+     id, text content or filling JS is changed. Decision D2 applied:
+     G5's blue top border retires in favour of the hairline, and the
+     pay-table total goes amber (money = amber; green stays reserved
+     for status-ok). Buttons keep the ghost/secondary treatment; the
+     sticky #btnDoneMenu background from G6 is a scroll affordance
+     and is deliberately not overridden.
+     ===================================================================== */
+  body.menu3 #doneWrap .card{
+    background:var(--panel-bg, linear-gradient(180deg, rgba(17,32,50,.90), rgba(9,17,28,.94)));
+    border:1px solid var(--hairline, rgba(255,255,255,.14));
+    border-top:1px solid var(--hairline, rgba(255,255,255,.14));
+    border-radius:var(--r-panel, 12px);
+    box-shadow:0 18px 50px rgba(0,0,0,.6);
+    transition:background var(--t-ui, 200ms) ease, border-color var(--t-ui, 200ms) ease, box-shadow var(--t-ui, 200ms) ease;
+  }
+  body.menu3 #doneWrap .card h1{
+    font-family:"Avenir Next Condensed","Arial Narrow","Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    letter-spacing:.04em;
+    filter:drop-shadow(0 2px 8px rgba(0,0,0,.55));
+  }
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    body.menu3 #doneWrap .card h1{
+      background-image:linear-gradient(180deg, #ffffff 0%, #dfe8f2 34%, #9db2c8 56%, #eef3f9 82%, #c3d2e2 100%);
+      -webkit-background-clip:text; background-clip:text;
+      color:transparent; -webkit-text-fill-color:transparent;
+    }
+  }
+  body.menu3 #doneWrap #doneSub{
+    letter-spacing:.18em; text-transform:uppercase; color:var(--dim, #9fb2bd);
+  }
+  body.menu3 #doneWrap .payTable td{
+    border-bottom:1px solid var(--hairline, rgba(255,255,255,.14));
+  }
+  body.menu3 #doneWrap .payTable tr.total td{
+    border-bottom:none;
+  }
+  body.menu3 #doneWrap .payTable tr.total td:last-child{
+    color:var(--amber, #ffb340);
+  }
+  body.menu3 #doneWrap .ghostBtn{
+    border:1px solid var(--hairline, rgba(255,255,255,.14));
+    border-radius:var(--r-card, 8px);
+    transition:background var(--t-ui, 200ms) ease, border-color var(--t-ui, 200ms) ease, color var(--t-ui, 200ms) ease;
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.menu3 #doneWrap .card, body.menu3 #doneWrap .ghostBtn{ transition:none !important; }
+  }
+</style>
+<script>
+"use strict";
+/* =====================================================================
+   UI POLISH companion — registers K401.uiPolish.regression() for the
+   UI-0 token layer + UI-1 delivery-results restyle. Read-only: the
+   module writes no DOM, no classes and no save data; both stages are
+   pure CSS scoped under body.menu3 (flag kot401.menu3, owned by the
+   MENU3 module — 'off' removes the class and every rule here goes
+   inert with it, restoring the exact prior presentation).
+   ===================================================================== */
+(function(){
+  function cssOf(id){
+    var n = document.getElementById(id);
+    return n ? (n.textContent || '') : '';
+  }
+  function regression(){
+    var checks = {};
+    var onNow = document.body.classList.contains('menu3');
+    var tokCss = cssOf('menu3Tokens'), uiCss = cssOf('uiPolishStyle');
+    checks.tokensStylePresent = !!document.getElementById('menu3Tokens') && tokCss.indexOf('body.menu3') >= 0;
+    checks.tokensCarryDeltas = tokCss.indexOf('--hairline') >= 0 && tokCss.indexOf('--panel-bg') >= 0 &&
+      tokCss.indexOf('--r-panel:12px') >= 0 && tokCss.indexOf('--r-card:8px') >= 0 && tokCss.indexOf('--t-ui:200ms') >= 0;
+    checks.tokensNeverJsOwned = tokCss.indexOf('--ctl-scale') < 0 && tokCss.indexOf('--ctl-op') < 0 && tokCss.indexOf('--kb:') < 0;
+    if (onNow){
+      var cs = window.getComputedStyle(document.body);
+      checks.tokenValuesLive = (cs.getPropertyValue('--amber') || '').trim() === '#ffb340' &&
+        (cs.getPropertyValue('--hairline') || '').trim() === 'rgba(255,255,255,.14)' &&
+        (cs.getPropertyValue('--r-panel') || '').trim() === '12px' &&
+        (cs.getPropertyValue('--t-ui') || '').trim() === '200ms';
+    } else checks.tokenValuesLive = true;   // layer inert when flag off — nothing to read
+    checks.ui1Scoped = uiCss.indexOf('body.menu3 #doneWrap') >= 0 &&
+      (uiCss.split('#doneWrap').length - 1) === (uiCss.split('body.menu3 #doneWrap').length - 1);
+    checks.ui1RetiresBlue = uiCss.indexOf('border-top:1px solid var(--hairline') >= 0 && uiCss.indexOf('63,155,224') < 0;
+    checks.ui1TotalAmber = uiCss.indexOf('tr.total td:last-child') >= 0 && uiCss.indexOf('var(--amber') >= 0;
+    checks.payIdsIntact = ['payBase','payGrade','payDock','payTime','payWx','payDmg','payTotal',
+      'doneSub','stars','doneLoads','btnAgain','btnDoneMenu'].every(function(id){ return !!document.getElementById(id); });
+    var h1 = document.querySelector('#doneWrap .card h1');
+    checks.doneSkeletonIntact = !!h1 && h1.textContent === 'DELIVERED' && !!document.getElementById('doneWrap');
+    checks.noSaveKeysTouched = (typeof SAVE_KEYS === 'undefined') ||
+      (SAVE_KEYS.indexOf('kot401.menu3') < 0 && SAVE_KEYS.indexOf('uiPolish') < 0);
+    var ok = Object.keys(checks).every(function(k){ return checks[k] === true; });
+    return { ok: ok, checks: checks, on: onNow };
+  }
+  window.K401 = window.K401 || {};
+  window.K401.uiPolish = { regression: regression };
+})();
+</script>
 </body>
 </html>
