@@ -1826,9 +1826,9 @@
       <p>📻 <b>CB radio — text stage (OTW-2):</b> tap the 📻 button on the right edge of the driving HUD. Three channels: <b>Convoy</b> — private to your convoy room (the OTW-1 convoy chat, formalized; solo it simply says to join a convoy). <b>Local</b> — proximity radio on the same room: another driver's Local message only appears if their truck's last synced position is within the radio range (<b>≈ 2 km</b> in game distance) of yours; out-of-range messages are silently dropped, and range filtering is by synced position. <b>Company</b> unlocks visually once you are <b>signed in and a member of an online company</b> (OTW-4, Career &amp; Company → Online Company) — but the company chat relay arrives in a later update, so sending stays disabled with that note shown; nothing is faked. The named AI haulers (Sysco, Erb, Trans Pro, Northern Haul, Canuck Freight) post on <b>Local</b>: warnings only when something real fires — construction or an incident ahead on the corridor, weather turning (black ice forming, heavy snow, fog), Toronto congestion changing, the MTO scale opening or closing — plus occasional casual chatter. If no feed fired, no warning is posted. Solo, Local carries AI traffic only; other drivers need a convoy room. Messages cap at <b>200 characters</b>, one per <b>1.2 s</b>, duplicates are suppressed, and every message carries the sender's name and the sim-clock time. Tap a sender's name to <b>mute</b> them (hidden, remembered on this device), <b>block</b> them (mute + their truck is flagged in the convoy panel), or <b>report</b> them — reports are recorded in a log on this device only; online report delivery arrives with player accounts, and the panel says so plainly. <b>There is no voice radio in this build</b> — voice ships only after real browser-to-browser mobile testing, so there is no push-to-talk button pretending otherwise.</p>
       <p><b>Convoy (OTW-1):</b> from the menu, Convoy opens the run setup at the convoy panel. Create a <b>casual</b> convoy (5-letter code) or a <b>private</b> one (long unguessable invite token — reveal and copy it from the lobby). The creator leads: they name the convoy, pick the <b>shared route</b>, and can drop a <b>rally point</b>; leadership passes to the longest-present member if the leader leaves, and the leader can disband (everyone goes solo, nobody loses progress). Members ready-up in the lobby — readying takes the shared route as your objective. You will see each other's brake lights, indicators, headlights and trailer swing, with names, trucks, locations, ready state and connection status in the lobby. Weather and the clock follow the leader. Convoy trucks are <b>non-collision</b> while networking matures — drive-through ghosts, no player can damage another. If the connection drops, the game shows <b>Reconnecting…</b> and restores your session automatically; if it cannot, you return to solo with your run, truck and career untouched. Recommended size is 4 trucks; 8 is load-test territory.</p>
       <p>🏛 <b>Trucking Empire:</b> the <b>Dashboard</b> tab in Career &amp; Company (or the Company button in the driving HUD) runs your whole operation from one screen — fleet, drivers and their Hours-of-Service clocks, active contracts, money, terminals and reputation, with your AI trucks plotted on the corridor from the off-screen sim's real state. <b>Drivers</b> are people now: experience, safety records, wage expectations and preferred routes, morale that rises and falls with fair pay, workload and idle time, training that makes them better, and the same Canadian HOS clocks you drive under (13h drive / 14h duty / 70h cycle) — when a clock runs out, they rest, and one driver = one truck = one job, always. <b>Terminals</b> can be bought or leased in the six map cities only (Kitchener, Cambridge, Guelph, Mississauga, Toronto, and Brampton — up the Hwy 410 branch), upgraded for capacity, repair discounts and rest quality; the one in your company HQ city is your HQ. Every contract card now shows a <b>profit estimate before you commit</b> — revenue minus fuel, wages and wear, with the assumptions printed. <b>Finances</b> runs the obligations on a fixed weekly rhythm — insurance per truck, driver payroll, terminal rent, loan payments on a schedule you see in full <i>before</i> you sign — and weekly/monthly P&amp;L reports built from the same ledger as everything else. The named haulers on the road (Northern Haul, Canuck Freight, Trans Pro, Erb, Sysco) are also <b>rival firms</b> that claim board contracts and outbid premium freight — but the board always keeps viable work for a fleet your size, and their aggression is a setting (Relaxed / Standard / Aggressive) on the Rivals tab. Your <b>reputation</b> — on-time, damage-free, clean inspections, from you and your drivers — unlocks premium and elite freight. All of it settles through the same exactly-once ledger, in fictional dollars, and your pre-Empire save migrates forward automatically with a backup kept for rollback.</p>
-      <p>🤝 <b>Co-op freight (OTW-4 — server-settled):</b> the convoy <b>leader</b> can post a contract from the Career contract board — or a free-form lane — as a <b>co-op contract</b> from the Co-op section of the convoy panel. Four types: <b>(A) Shared route</b>, <b>(B) Multi-truck delivery</b>, <b>(C) Timed convoy</b>, <b>(D) Specialized / heavy</b> (heavy loads only, 2+ trucks, premium pay). For B, C and D a partial finish pays a <b>proportional consolation</b> on the weight that actually arrived — the partial rule is printed on the offer card <i>before</i> anyone accepts, along with an <b>estimated</b> share labelled “estimate” (the server computes the real one). The leader picks the <b>payout method</b> — <b>Equal split</b>, <b>Contribution-based</b>, or <b>Company account</b> — shown to every member before they accept. Company payout unlocks when the leader and every assignee belong to that company, and the server validates membership regardless. <b>Co-op freight needs every driver signed in</b> (Kings &amp; Dice account, Career &amp; Company → Online Company): settlement is server-verified, posting is disabled while anyone required is a guest, and there is no fallback to a leader's-device settlement. Signing in here <b>rotates your account session</b> — the dice game may ask you to sign in again there. How settlement works now: the leader <b>registers</b> the contract with the server when the mission starts; each driver <b>confirms only their own delivery</b> to the server when the game's real delivery conditions are met (right dock, right cargo, scored back-in); when the contract resolves (all delivered, or the deadline passes) the leader asks the server to <b>settle</b>, and the server computes the shares. Personal payouts land in your cash ledger with the server's idempotency key (<b>coop:&lt;contract&gt;:&lt;you&gt;</b>), so a repeated settlement message can never pay twice. <b>Company payouts land in the company balance on the server</b> — you see the settlement summary, and no personal wallet is credited: company payouts to members are likewise recorded in the company ledger on the server with no local cash credit here, because this service has no personal-wallet credit. Nobody ever types in a reward amount: every dollar comes from the contract definition. If you disconnect mid-mission, your assignment is <b>held for 10 sim-minutes</b> (or until the deadline) and resumes when you reconnect; if the leader drops, the new leader takes over coordination. Disbanding the convoy cancels the mission locally — deliveries already confirmed stand on the server, undelivered cargo pays nothing. A co-op mission is a <b>session-only</b> object: it is never written into your save, and reloading the page mid-mission ends your part in it — your single-player progress is never touched either way. Co-op runs inside the convoy's shared weather and clock, and <b>Dispatch</b> posts the big mission moments on the CB Convoy channel.</p>
+      <p>🤝 <b>Co-op freight (OTW-4 — server-settled):</b> the convoy <b>leader</b> can post a contract from the Career contract board — or a free-form lane — as a <b>co-op contract</b> from the Co-op section of the convoy panel. Four types: <b>(A) Shared route</b>, <b>(B) Multi-truck delivery</b>, <b>(C) Timed convoy</b>, <b>(D) Specialized / heavy</b> (heavy loads only, 2+ trucks, premium pay). For B, C and D a partial finish pays a <b>proportional consolation</b> on the weight that actually arrived — the partial rule is printed on the offer card <i>before</i> anyone accepts, along with an <b>estimated</b> share labelled “estimate” (the server computes the real one). The leader picks the <b>payout method</b> — <b>Equal split</b>, <b>Contribution-based</b>, or <b>Company account</b> — shown to every member before they accept. Company payout unlocks when the leader and every assignee belong to that company, and the server validates membership regardless. <b>Co-op freight needs every driver signed in</b> (King of the 401 account, Career &amp; Company → Online Company): settlement is server-verified, posting is disabled while anyone required is a guest, and there is no fallback to a leader's-device settlement. Truck accounts are separate from Kings &amp; Dice — signing in here never affects the dice game. How settlement works now: the leader <b>registers</b> the contract with the server when the mission starts; each driver <b>confirms only their own delivery</b> to the server when the game's real delivery conditions are met (right dock, right cargo, scored back-in); when the contract resolves (all delivered, or the deadline passes) the leader asks the server to <b>settle</b>, and the server computes the shares. Personal payouts land in your cash ledger with the server's idempotency key (<b>coop:&lt;contract&gt;:&lt;you&gt;</b>), so a repeated settlement message can never pay twice. <b>Company payouts land in the company balance on the server</b> — you see the settlement summary, and no personal wallet is credited: company payouts to members are likewise recorded in the company ledger on the server with no local cash credit here, because this service has no personal-wallet credit. Nobody ever types in a reward amount: every dollar comes from the contract definition. If you disconnect mid-mission, your assignment is <b>held for 10 sim-minutes</b> (or until the deadline) and resumes when you reconnect; if the leader drops, the new leader takes over coordination. Disbanding the convoy cancels the mission locally — deliveries already confirmed stand on the server, undelivered cargo pays nothing. A co-op mission is a <b>session-only</b> object: it is never written into your save, and reloading the page mid-mission ends your part in it — your single-player progress is never touched either way. Co-op runs inside the convoy's shared weather and clock, and <b>Dispatch</b> posts the big mission moments on the CB Convoy channel.</p>
       <p>🧪 <b>Specialized Hauling:</b> the contract board now posts three specialized types alongside standard freight, each explained on its card <i>before</i> you commit. <b>Tanker</b> loads are liquid — the load surges under braking and cornering, lengthening stops and rocking the trailer (watch the surge meter on the mission panel); gentle inputs keep it settled and earn a <b>smooth bonus</b> on delivery. <b>Reefer</b> loads carry a temperature band printed on the contract: the reefer unit holds the setpoint against the weather, the mission panel shows live cargo temperature with a unit on/off switch, you are warned <i>before</i> the band is breached, and time outside it spoils cargo against your pay. <b>Oversize</b> loads are wide and heavy: a one-time <b>permit</b> is charged through the ledger when you accept — before departure — an <b>escort vehicle</b> with an amber light bar runs behind you, escorted pace is capped near 80 km/h, the deadline already allows for it, and pay runs higher. Empire drivers need real qualifications to be dispatched on them (tanker: level 2 + training · reefer: level 2 · oversize: level 3 + training + a strong safety record), an AI reefer load can spoil a little in careless hands, and co-op type D can post any specialized board contract. Every dollar — permits, bonuses, spoilage — moves through the same exactly-once ledger.</p>
-      <p>🏢 <b>Online Company (OTW-4):</b> in <b>Career &amp; Company → Online Company</b> you can sign in with your <b>Kings &amp; Dice account</b> (signing in rotates your account session — the dice game may ask you to sign in again there) and run a company <b>shared with other drivers</b>: create one (name, logo preset, brand colour, Ontario HQ), invite members by username, and work under server-enforced roles — <b>Owner, Manager, Dispatcher, Driver, Recruit</b> — where nobody can grant a role at or above their own and the server has the final say on every action. The company has a <b>server balance</b>, a shared fleet bought from the server catalogue (one truck, one assigned driver at a time), a shared ledger and an activity log. <b>Deposits</b> move money from your local cash — deducted only after the server confirms, exactly once, under the same idempotency key if you retry. <b>Payouts</b> are paid by the company on the server and recorded in its ledger; this service does not credit personal wallets. Company features need the <b>convoy connection</b> as their link (the tab offers an “Open company link” button that starts a private solo session as the connection). Your <b>local</b> company on the Company tab is a separate offline branding layer and is never merged with the online one. The CB <b>Company</b> channel unlocks when you are signed in and a member — its chat relay arrives in a later update, so sending stays disabled until then.</p>
+      <p>🏢 <b>Online Company (OTW-4):</b> in <b>Career &amp; Company → Online Company</b> you can sign in with your <b>King of the 401 account</b> (separate from Kings &amp; Dice — neither game ever signs you out of the other) and run a company <b>shared with other drivers</b>: create one (name, logo preset, brand colour, Ontario HQ), invite members by username, and work under server-enforced roles — <b>Owner, Manager, Dispatcher, Driver, Recruit</b> — where nobody can grant a role at or above their own and the server has the final say on every action. The company has a <b>server balance</b>, a shared fleet bought from the server catalogue (one truck, one assigned driver at a time), a shared ledger and an activity log. <b>Deposits</b> move money from your local cash — deducted only after the server confirms, exactly once, under the same idempotency key if you retry. <b>Payouts</b> are paid by the company on the server and recorded in its ledger; this service does not credit personal wallets. Company features need the <b>convoy connection</b> as their link (the tab offers an “Open company link” button that starts a private solo session as the connection). Your <b>local</b> company on the Company tab is a separate offline branding layer and is never merged with the online one. The CB <b>Company</b> channel unlocks when you are signed in and a member — its chat relay arrives in a later update, so sending stays disabled until then.</p>
     </div>
     <button class="ghostBtn menuBack" type="button">← Back to menu</button>
   </div>
@@ -2476,6 +2476,26 @@ var GFX2 = true;
 try { GFX2 = localStorage.getItem('kot401.gfx2') !== 'off'; } catch (e){}
 var GFX2STATE = { tier: 'high', sunDisc: true };   // tier facts, written by the GFX preset layer
 function gfx2On(){ return GFX2; }
+
+/* ================= TRUCKS2 — Realistic Trucks, Stage A =================
+   Master flag: localStorage 'kot401.trucks2', default ON — same pattern
+   as kot401.gfx2. 'off' restores the pre-Stage-A trucks EXACTLY: every
+   Stage A branch below keys off TRUCKS2 and the flag-off path is the
+   original code (verified by harness census, flag on vs off vs the
+   pre-stage baseline). Stage A scope: the fc515 aero clip brought to
+   the new standard (multi-segment bevels, deep grille, wrapped
+   windshield), the new shared wheel (TRUE duals, rim ring + modelled
+   lug nuts, tread/sidewall colour + the game's first truck NORMAL
+   map), and shared canvas maps (brushed-metal tanks, paint AO +
+   roughness variation). Remaining clips roll out in Stage B.
+   The GLB pipeline (PV2) is untouched and stays ARMED: its manifest
+   is empty, no legally clean realistic semi asset is available, and
+   neither publish route can carry an assets folder — so the showcase
+   is built in the game's own procedural pipeline, per the spec's own
+   fallback instruction, and no model is claimed where none exists. */
+var TRUCKS2 = true;
+try { TRUCKS2 = localStorage.getItem('kot401.trucks2') !== 'off'; } catch (e){}
+function trucks2On(){ return TRUCKS2; }
 
 function roadTextureLegacy(){
   // canvas X = along the road (u), canvas Y = across it (v)
@@ -3387,6 +3407,160 @@ function pvFlapTexture(){
   var t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   pvFlapTexture.t = t; return t;
 }
+/* ================= TRUCKS2 shared truck maps =================
+   The game's first real truck texture maps — all drawn in code on
+   shared canvases, exactly like every other texture in the game, and
+   shared across the whole fleet (never per-model). New texture memory
+   at Low: tyre 512x256 colour + normal (~0.70 MB each with mips),
+   brushed-metal 256 (~0.35 MB), paint AO 32x256 (~0.04 MB), paint
+   roughness 256 (~0.35 MB) — about +2.2 MB against the plan's +6 MB
+   cap (Stage 7 census baseline: Low 49.3 MB). */
+/* Sobel height->normal conversion (x wraps for the tyre seam). */
+function pvHeightToNormal(srcCanvas, strength){
+  var w = srcCanvas.width, h = srcCanvas.height;
+  var sg = srcCanvas.getContext('2d');
+  var data = sg.getImageData(0, 0, w, h).data;
+  var out = document.createElement('canvas'); out.width = w; out.height = h;
+  var og = out.getContext('2d'); var img = og.createImageData(w, h); var od = img.data;
+  function hv(x, y){ x = ((x % w) + w) % w; y = y < 0 ? 0 : (y >= h ? h - 1 : y); return data[(y * w + x) * 4] / 255; }
+  for (var y = 0; y < h; y++) for (var x = 0; x < w; x++){
+    var dx = (hv(x + 1, y) - hv(x - 1, y)) * strength;
+    var dy = (hv(x, y + 1) - hv(x, y - 1)) * strength;
+    var inv = 1 / Math.sqrt(dx * dx + dy * dy + 1);
+    var o = (y * w + x) * 4;
+    od[o] = (-dx * inv * 0.5 + 0.5) * 255;
+    od[o + 1] = (dy * inv * 0.5 + 0.5) * 255;
+    od[o + 2] = inv * 255;
+    od[o + 3] = 255;
+  }
+  og.putImageData(img, 0, 0);
+  return out;
+}
+/* Tyre canvases in lathe-UV space: u = around the tyre, v = along the
+   profile (0 = inner bead side A, 0.43-0.57 = tread crown, 1 = side B).
+   Colour: sidewall rings + lettering ticks, chevron tread blocks,
+   three circumferential grooves. Height: the same layout in grey —
+   fed to pvHeightToNormal for the tread/sidewall normal map. */
+function pvTyreCanvases(){
+  if (pvTyreCanvases.c) return pvTyreCanvases.c;
+  var W = 512, H = 256;
+  function Y(v){ return (1 - v) * H; }
+  var hc = document.createElement('canvas'); hc.width = W; hc.height = H;
+  var hg = hc.getContext('2d');
+  var cc = document.createElement('canvas'); cc.width = W; cc.height = H;
+  var cg = cc.getContext('2d');
+  hg.fillStyle = '#7d7d7d'; hg.fillRect(0, 0, W, H);
+  cg.fillStyle = '#17181b'; cg.fillRect(0, 0, W, H);
+  [0.16, 0.84].forEach(function(v){
+    var y = Y(v);
+    hg.fillStyle = '#9c9c9c'; hg.fillRect(0, y - 8, W, 16);
+    cg.fillStyle = '#22242a'; cg.fillRect(0, y - 8, W, 16);
+    cg.fillStyle = 'rgba(255,255,255,0.07)'; cg.fillRect(0, y - 8, W, 2);
+  });
+  [0.245, 0.755].forEach(function(v){
+    var y = Y(v);
+    for (var x = 4; x < W; x += 16){
+      hg.fillStyle = '#8f8f8f'; hg.fillRect(x, y - 5, 8, 10);
+      cg.fillStyle = 'rgba(255,255,255,0.05)'; cg.fillRect(x, y - 5, 8, 10);
+    }
+  });
+  var ty0 = Y(0.70), ty1 = Y(0.30);
+  hg.fillStyle = '#8a8a8a'; hg.fillRect(0, ty0, W, ty1 - ty0);
+  cg.fillStyle = '#1b1d21'; cg.fillRect(0, ty0, W, ty1 - ty0);
+  [hg, cg].forEach(function(g, gi){
+    g.save(); g.beginPath(); g.rect(0, ty0, W, ty1 - ty0); g.clip();
+    for (var x = -21; x < W + 21; x += 42){
+      g.fillStyle = gi === 0 ? '#ababab' : ((x / 42) % 2 === 0 ? '#202228' : '#23252c');
+      g.save(); g.translate(x + 21, (ty0 + ty1) / 2); g.rotate(0.42); g.fillRect(-16, -56, 13, 112); g.restore();
+      g.save(); g.translate(x + 21, (ty0 + ty1) / 2); g.rotate(-0.42); g.fillRect(3, -56, 13, 112); g.restore();
+    }
+    g.restore();
+  });
+  [0.42, 0.50, 0.58].forEach(function(v){
+    var y = Y(v);
+    hg.fillStyle = '#2e2e2e'; hg.fillRect(0, y - 3, W, 6);
+    cg.fillStyle = '#0b0c0e'; cg.fillRect(0, y - 3, W, 6);
+  });
+  cg.fillStyle = 'rgba(255,255,255,0.05)';
+  for (var i = 0; i < 500; i++) cg.fillRect(Math.random() * W, Math.random() * H, 2, 2);
+  pvTyreCanvases.c = { h: hc, c: cc };
+  return pvTyreCanvases.c;
+}
+function pvTyreMaps(){
+  if (pvTyreMaps.m) return pvTyreMaps.m;
+  var cv = pvTyreCanvases();
+  var map = new THREE.CanvasTexture(cv.c);
+  map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(6, 1);
+  map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 4;
+  var nrm = new THREE.CanvasTexture(pvHeightToNormal(cv.h, 2.2));
+  nrm.wrapS = nrm.wrapT = THREE.RepeatWrapping; nrm.repeat.set(6, 1); nrm.anisotropy = 4;
+  pvTyreMaps.m = { map: map, normalMap: nrm };
+  return pvTyreMaps.m;
+}
+/* Brushed metal: fine horizontal streaks — bump + roughness for the
+   fuel tanks (replaces smooth chrome there). */
+function pvBrushedCanvas(){
+  if (pvBrushedCanvas.c) return pvBrushedCanvas.c;
+  var c = document.createElement('canvas'); c.width = 256; c.height = 256;
+  var g = c.getContext('2d');
+  g.fillStyle = '#8c8c8c'; g.fillRect(0, 0, 256, 256);
+  for (var i = 0; i < 2600; i++){
+    var y = Math.random() * 256, l = 20 + Math.random() * 120, x = Math.random() * 256;
+    g.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)';
+    g.fillRect(x, y, l, 1);
+  }
+  pvBrushedCanvas.c = c;
+  return c;
+}
+function pvBrushedChrome(){
+  if (pvBrushedChrome.m) return pvBrushedChrome.m;
+  var cv = pvBrushedCanvas();
+  var bump = new THREE.CanvasTexture(cv); bump.wrapS = bump.wrapT = THREE.RepeatWrapping;
+  var rgh = new THREE.CanvasTexture(cv); rgh.wrapS = rgh.wrapT = THREE.RepeatWrapping;
+  pvBrushedChrome.m = new THREE.MeshStandardMaterial({ color: 0xdfe4e8, roughness: 0.34, metalness: 1.0,
+    envMapIntensity: 1.25, bumpMap: bump, bumpScale: 0.35, roughnessMap: rgh });
+  return pvBrushedChrome.m;
+}
+/* Paint AO (canvas-baked approximation, labelled as such): a gentle
+   vertical gradient — white at the roofline, ~0.80 at the rocker —
+   mapped through the profile UV space (extrude side faces carry
+   shape-space UVs where v tracks world height). Soft ground-occlusion
+   shading only; it is not a ray-traced bake. */
+function pvPaintAOTexture(){
+  if (pvPaintAOTexture.t) return pvPaintAOTexture.t;
+  var c = document.createElement('canvas'); c.width = 32; c.height = 256;
+  var g = c.getContext('2d');
+  var gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.75, '#e8e8e8'); gr.addColorStop(1, '#c9c9c9');
+  g.fillStyle = gr; g.fillRect(0, 0, 32, 256);
+  var t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+  t.repeat.set(1, 0.24); t.offset.set(0, -0.17);
+  pvPaintAOTexture.t = t;
+  return t;
+}
+/* Paint roughness variation: subtle speckle/blotch so the clear-coat
+   has something to break up. Green channel drives roughness. */
+function pvPaintRoughTexture(){
+  if (pvPaintRoughTexture.t) return pvPaintRoughTexture.t;
+  var c = document.createElement('canvas'); c.width = 256; c.height = 256;
+  var g = c.getContext('2d');
+  g.fillStyle = '#e6e6e6'; g.fillRect(0, 0, 256, 256);
+  for (var i = 0; i < 2400; i++){
+    g.fillStyle = Math.random() < 0.5 ? 'rgba(190,190,190,0.25)' : 'rgba(245,245,245,0.25)';
+    g.fillRect(Math.random() * 256, Math.random() * 256, 2, 2);
+  }
+  for (var j = 0; j < 26; j++){
+    var rg = g.createRadialGradient(Math.random() * 256, Math.random() * 256, 2, Math.random() * 256, Math.random() * 256, 26 + Math.random() * 30);
+    rg.addColorStop(0, 'rgba(205,205,205,0.20)'); rg.addColorStop(1, 'rgba(205,205,205,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 256, 256);
+  }
+  var t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); t.anisotropy = 4;
+  pvPaintRoughTexture.t = t;
+  return t;
+}
+
 var PV_TREAD = pvTreadTexture(), PV_LUG = pvLugTexture();
 var PV_WHEEL_SIDE = null, PV_HUB_MATS = null;
 (function pvWheelMats(){
@@ -3398,6 +3572,17 @@ var PV_WHEEL_SIDE = null, PV_HUB_MATS = null;
   PV_HUB_MATS = [hubSide, lugM, lugM];
 })();
 var PV_FLAP_MAT = new THREE.MeshStandardMaterial({ map: pvFlapTexture(), roughness: 0.95, metalness: 0 });
+/* TRUCKS2: the shared tyre material gains the tread/sidewall colour
+   map + normal map (the plain PV_TREAD colour/bump is the flag-off
+   path, untouched below this line's condition). */
+if (typeof trucks2On === 'function' && trucks2On()){
+  var _t2maps = pvTyreMaps();
+  PV_WHEEL_SIDE[0].map = _t2maps.map;
+  PV_WHEEL_SIDE[0].normalMap = _t2maps.normalMap;
+  PV_WHEEL_SIDE[0].normalScale = new THREE.Vector2(0.85, 0.85);
+  PV_WHEEL_SIDE[0].bumpMap = null;
+  PV_WHEEL_SIDE[0].needsUpdate = true;
+}
 var PV_TAPE_MAT = new THREE.MeshStandardMaterial({ color: 0xd8d8d8, emissive: 0xaa2222, emissiveIntensity: 0.35, roughness: 0.4 });
 
 /* ---------------- PBR-style materials ---------------- */
@@ -3447,6 +3632,23 @@ function pvWedgeB(w, zB, zF, yBot, yTopB, yTopF, material){
   m.castShadow = true; m.receiveShadow = true;
   return m;
 }
+/* TRUCKS2: multi-segment bevelled wedge — same profile contract as
+   pvWedgeB, deeper bevel (0.05, 3 segments) so the aero nose reads as
+   a curved pressing instead of a hard CG fold. Cached/shared. */
+function pvWedgeB2(w, zB, zF, yBot, yTopB, yTopF, material){
+  var key = 'wedgeB2' + [w, zB, zF, yBot, yTopB, yTopF].join('_');
+  var geo = pvGeo(key, function(){
+    var s = new THREE.Shape();
+    s.moveTo(zB, yBot); s.lineTo(zF, yBot); s.lineTo(zF, yTopF); s.lineTo(zB, yTopB); s.closePath();
+    var g2 = new THREE.ExtrudeGeometry(s, { depth: Math.max(0.1, w - 0.1), steps: 1,
+      bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.045, bevelSegments: 3 });
+    g2.rotateY(-Math.PI / 2); g2.translate(w / 2 - 0.05, 0, 0);
+    return g2;
+  });
+  var m = new THREE.Mesh(geo, material);
+  m.castShadow = true; m.receiveShadow = true;
+  return m;
+}
 function pvBeamCone(lights, x, lampZ){
   var geo = new THREE.CylinderGeometry(1.35, 0.3, 6.5, 12, 1, true);
   geo.rotateX(Math.PI / 2); geo.translate(0, 0, 3.25);
@@ -3469,14 +3671,14 @@ function pvBadgePlane(lights, w, h, text){
    AI rigs, convoy remotes), so the detail costs memory once. */
 var PV_GEO_CACHE = {};
 function pvGeo(key, make){ if (!PV_GEO_CACHE[key]) PV_GEO_CACHE[key] = make(); return PV_GEO_CACHE[key]; }
-function pvProfileGeo(key, pts, width, bevel){
+function pvProfileGeo(key, pts, width, bevel, seg){
   return pvGeo(key, function(){
     var s = new THREE.Shape();
     s.moveTo(pts[0][0], pts[0][1]);
     for (var i = 1; i < pts.length; i++) s.lineTo(pts[i][0], pts[i][1]);
     s.closePath();
     var geo = new THREE.ExtrudeGeometry(s, { depth: Math.max(0.1, width - bevel * 2), steps: 1,
-      bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel * 0.9, bevelSegments: 1 });
+      bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel * 0.9, bevelSegments: seg || 1 });
     geo.rotateY(-Math.PI / 2);
     geo.computeBoundingBox();
     var bb = geo.boundingBox;
@@ -3484,8 +3686,8 @@ function pvProfileGeo(key, pts, width, bevel){
     return geo;
   });
 }
-function pvProfileMesh(key, pts, width, bevel, material){
-  var m = new THREE.Mesh(pvProfileGeo(key, pts, width, bevel), material);
+function pvProfileMesh(key, pts, width, bevel, material, seg){
+  var m = new THREE.Mesh(pvProfileGeo(key, pts, width, bevel, seg), material);
   m.castShadow = true; m.receiveShadow = true;
   return m;
 }
@@ -3547,7 +3749,9 @@ function buildPremiumTractor(parent, opts){
   var style = opts.style || 'standard';
   var variant = opts.variant || { sleeper: 'short', stacks: 2 };
   var paint = pvPaint(opts.color != null ? opts.color : 0x0f6f6a);
+  if (typeof trucks2On === 'function' && trucks2On()){ paint.aoMap = pvPaintAOTexture(); paint.roughnessMap = pvPaintRoughTexture(); }
   var chrome = pvChrome();
+  var tankMat = (typeof trucks2On === 'function' && trucks2On()) ? pvBrushedChrome() : chrome;
   var dark = mat(0x181c1f, 0.7, 0.3);
   var darkMetal = mat(0x2b3034, 0.55, 0.6);
   var glass = pvGlassMat();
@@ -3585,7 +3789,7 @@ function buildPremiumTractor(parent, opts){
   cyl(0.4, 0.07, dark, 0, 1.2, -1.55, 16);
   /* fuel tanks with straps, DEF/battery box, side steps */
   [-1.0, 1.0].forEach(function(x){
-    var tk = cyl(0.34, 1.6, chrome, x, 0.82, 0.35, 22); tk.rotation.x = Math.PI / 2;
+    var tk = cyl(0.34, 1.6, tankMat, x, 0.82, 0.35, 22); tk.rotation.x = Math.PI / 2;
     [-0.35, 0.35].forEach(function(dz){ var st = cyl(0.355, 0.07, dark, x, 0.82, 0.35 + dz, 22); st.rotation.x = Math.PI / 2; detail.push(st); });
     BD(0.46, 0.05, 0.34, darkMetal, x * 1.16, 0.52, 1.28);
     BD(0.46, 0.05, 0.34, darkMetal, x * 1.16, 0.94, 1.28);
@@ -3613,7 +3817,8 @@ function buildPremiumTractor(parent, opts){
       return g;
     }
     var tall = kind === 'tall';
-    g.add(pvProfileMesh(tall ? 'slpTall' : 'slpShort', tall ? SLP_PTS_TALL : SLP_PTS_SHORT, 2.5, 0.03, paint));
+    if (tall && typeof trucks2On === 'function' && trucks2On()) g.add(pvProfileMesh('slpTall2', SLP_PTS_TALL, 2.5, 0.06, paint, 3));
+    else g.add(pvProfileMesh(tall ? 'slpTall' : 'slpShort', tall ? SLP_PTS_TALL : SLP_PTS_SHORT, 2.5, 0.03, paint));
     [-1, 1].forEach(function(sd){
       var sg = SB(0.05, 0.44, tall ? 0.7 : 0.55, glass, sd * 1.26, tall ? 3.32 : 3.25, tall ? -0.95 : -0.80, false);
       detail.push(sg);
@@ -3698,18 +3903,44 @@ function buildPremiumTractor(parent, opts){
     var g = new THREE.Group(); parent.add(g);
     function CB(w, h, d, material, x, y, z, shadow){ return box(w, h, d, material, x, y, z, g, shadow); }
     function CRB(w, h, d, r, material, x, y, z, shadow){ var m = pvRB(w, h, d, r, 1, material, shadow); m.position.set(x, y, z); g.add(m); return m; }
-    g.add(pvProfileMesh('cabAero', CAB_PTS_AERO, 2.5, 0.03, paint));
-    g.add(pvWedgeB(2.36, 1.7, 3.62, 0.7, 1.86, 1.0, paint));
+    if (typeof trucks2On === 'function' && trucks2On()) g.add(pvProfileMesh('cabAero2', CAB_PTS_AERO, 2.5, 0.06, paint, 3));
+    else g.add(pvProfileMesh('cabAero', CAB_PTS_AERO, 2.5, 0.03, paint));
+    g.add((typeof trucks2On === 'function' && trucks2On()) ? pvWedgeB2(2.36, 1.7, 3.62, 0.7, 1.86, 1.0, paint) : pvWedgeB(2.36, 1.7, 3.62, 0.7, 1.86, 1.0, paint));
     CRB(2.42, 0.36, 0.44, 0.07, paint, 0, 0.74, 3.5, true);
     CB(2.0, 0.08, 0.05, chrome, 0, 0.95, 3.72, false);
-    var gr = CRB(1.5, 0.5, 0.06, 0.03, grilleMat, 0, 1.04, 3.6, false); gr.rotation.x = -0.35;
+    if (typeof trucks2On === 'function' && trucks2On()){
+      /* TRUCKS2 deep grille: shadow recess, mesh panel set back 0.035,
+         chrome frame and three bars standing proud — real depth the
+         light can catch, replacing the flat textured board. */
+      var gg = new THREE.Group(); gg.position.set(0, 1.04, 3.6); gg.rotation.x = -0.35; g.add(gg);
+      function GB(w2, h2, d2, m2, x2, y2, z2){ var mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); gg.add(mm); return mm; }
+      GB(1.56, 0.56, 0.05, dark, 0, 0, -0.03);
+      GB(1.5, 0.5, 0.04, grilleMat, 0, 0, -0.005);
+      GB(1.56, 0.05, 0.03, chrome, 0, 0.27, 0.02); GB(1.56, 0.05, 0.03, chrome, 0, -0.27, 0.02);
+      GB(0.05, 0.56, 0.03, chrome, -0.755, 0, 0.02); GB(0.05, 0.56, 0.03, chrome, 0.755, 0, 0.02);
+      [-0.14, 0, 0.14].forEach(function(dy){ GB(1.44, 0.045, 0.025, chrome, 0, dy, 0.035); });
+    } else {
+      var gr = CRB(1.5, 0.5, 0.06, 0.03, grilleMat, 0, 1.04, 3.6, false); gr.rotation.x = -0.35;
+    }
     [-1, 1].forEach(function(sd){
       var hh = CRB(0.54, 0.18, 0.3, 0.05, dark, sd * 0.85, 1.16, 3.42, false); hh.rotation.y = -sd * 0.38;
       var ln = CB(0.46, 0.13, 0.05, lights.head, sd * 0.87, 1.16, 3.545, false); ln.rotation.y = -sd * 0.38;
       var ind = CB(0.14, 0.11, 0.04, sd < 0 ? lights.indL : lights.indR, sd * 1.17, 1.07, 3.44, false); ind.rotation.y = -sd * 0.38;
       g.add(pvBeamCone(lights, sd * 0.85, 3.57));
     });
-    var ws = CB(2.3, 1.46, 0.045, glass, 0, 3.04, 1.72, false); ws.rotation.x = -0.248;
+    if (typeof trucks2On === 'function' && trucks2On()){
+      /* TRUCKS2 wrapped windshield: centre pane on the cab slope, two
+         side panes angled back around the pillars — shaped glass
+         instead of one flat plane. */
+      var wsC = CB(1.5, 1.46, 0.045, glass, 0, 3.04, 1.72, false); wsC.rotation.x = -0.248;
+      [-1, 1].forEach(function(sd){
+        var wsS = CB(0.52, 1.46, 0.045, glass, sd * 0.97, 3.04, 1.665, false);
+        wsS.rotation.x = -0.248; wsS.rotation.y = -sd * 0.38;
+        var pl2 = CB(0.06, 1.5, 0.05, paint, sd * 0.76, 3.04, 1.70, false); pl2.rotation.x = -0.248;
+      });
+    } else {
+      var ws = CB(2.3, 1.46, 0.045, glass, 0, 3.04, 1.72, false); ws.rotation.x = -0.248;
+    }
     [-1.19, 1.19].forEach(function(x){ var pl = CB(0.07, 1.5, 0.05, paint, x, 3.04, 1.72, false); pl.rotation.x = -0.248; });
     [-0.55, 0.55].forEach(function(x){ var wp = CB(0.045, 0.52, 0.02, dark, x, 2.38, 1.9, false); wp.rotation.x = -0.43; detail.push(wp); });
     for (var mI = -2; mI <= 2; mI++) CB(0.15, 0.08, 0.06, lights.marker, mI * 0.42, 3.845, 1.4, false);
@@ -3813,11 +4044,25 @@ function buildPremiumTractor(parent, opts){
   /* wheels: same positions/widths as the original build */
   [[-1.08, 2.35], [1.08, 2.35]].forEach(function(p){
     var holder = new THREE.Group(); holder.position.set(p[0], 0.53, p[1]); parent.add(holder);
-    var w = wheel(0.53, 0.36); holder.add(w);
+    var w = wheel(0.53, 0.36, p[0] > 0 ? 1 : -1); holder.add(w);
     if (opts.arrays){ opts.arrays.steer.push({ holder: holder, spin: w }); opts.arrays.drive.push(w); }
     if (opts.wheelsOut) opts.wheelsOut.push(w);
   });
   [[-1.08, -1.15], [1.08, -1.15], [-1.08, -2.25], [1.08, -2.25]].forEach(function(p){
+    if (typeof trucks2On === 'function' && trucks2On()){
+      /* TRUCKS2 TRUE duals: two 0.28 tyres with a 0.06 gap inside the
+         SAME 0.62 envelope — identical outer dimensions, contact
+         patch and axle positions, so physics/collision are untouched.
+         The pair is one spin group (drive arrays receive the group;
+         rotation.x spins both tyres about the axle line). */
+      var dg = new THREE.Group(); dg.position.set(p[0], 0.53, p[1]); parent.add(dg);
+      var dsd = p[0] > 0 ? 1 : -1;
+      var wi = wheel(0.53, 0.28, 0); wi.position.x = -dsd * 0.17; dg.add(wi);
+      var wo = wheel(0.53, 0.28, dsd); wo.position.x = dsd * 0.17; dg.add(wo);
+      if (opts.arrays) opts.arrays.drive.push(dg);
+      if (opts.wheelsOut) opts.wheelsOut.push(dg);
+      return;
+    }
     var w = wheel(0.53, 0.62); w.position.set(p[0], 0.53, p[1]); parent.add(w);
     if (opts.arrays) opts.arrays.drive.push(w);
     if (opts.wheelsOut) opts.wheelsOut.push(w);
@@ -4978,7 +5223,7 @@ function pvWheelGeos(r, w){
   PV_WHEEL_GEO[key] = g;
   return g;
 }
-function wheel(r, w){
+function wheel(r, w, outerSd){
   var geos = pvWheelGeos(r, w);
   var g = new THREE.Group();
   var tire = new THREE.Mesh(geos.tyre, PV_WHEEL_SIDE[0]);
@@ -4987,6 +5232,27 @@ function wheel(r, w){
   g.add(hub);
   var cap = new THREE.Mesh(geos.cap, PV_HUB_MATS[0]);
   g.add(cap);
+  if (outerSd && typeof trucks2On === 'function' && trucks2On()){
+    /* TRUCKS2 wheel detail, outer face only: a rim ring and eight
+       MODELLED lug nuts (hex profile, one InstancedMesh per wheel —
+       one extra draw call) replacing the painted-on lug texture.
+       Geometries are cached/shared via pvGeo. Only tractor builds
+       pass outerSd; trailer wheels keep the base wheel + new maps. */
+    var ring = new THREE.Mesh(pvGeo('rimRing' + r, function(){ return new THREE.RingGeometry(r * 0.40, r * 0.60, 24); }), PV_HUB_MATS[0]);
+    ring.rotation.y = outerSd > 0 ? Math.PI / 2 : -Math.PI / 2;
+    ring.position.x = outerSd * (w / 2 + 0.056);
+    g.add(ring);
+    var nutGeo = pvGeo('lugNut' + r, function(){ var ng = new THREE.CylinderGeometry(r * 0.055, r * 0.055, 0.05, 6); ng.rotateZ(Math.PI / 2); return ng; });
+    var nuts = new THREE.InstancedMesh(nutGeo, PV_HUB_MATS[0], 8);
+    var _m4 = new THREE.Matrix4();
+    for (var ni = 0; ni < 8; ni++){
+      var na = ni / 8 * Math.PI * 2;
+      _m4.makeTranslation(outerSd * (w / 2 + 0.062), Math.cos(na) * r * 0.36, Math.sin(na) * r * 0.36);
+      nuts.setMatrixAt(ni, _m4);
+    }
+    nuts.instanceMatrix.needsUpdate = true;
+    g.add(nuts);
+  }
   return g;
 }
 var truck = new THREE.Group(); scene.add(truck);
@@ -6484,7 +6750,9 @@ var RELAY_URL = 'wss://kings-and-dice-server.onrender.com/truck';
 var REMOTE_COLORS = [0xc23b2e, 0x2e5fc2, 0xe07b24, 0x5f8f2e, 0xd9b23a, 0xd8dde2, 0x22262a];
 var REMOTE_CSS = ['#ff7a6e','#6ea8ff','#ffb340','#8fd45a','#ffe27a','#eef3f6','#9fb2bd'];
 var CLIENT_VER = 'OTW4-1.0';   // OTW-4: sent in the /truck connect URL (&ver=) — the relay hard-gates mismatched rooms
-/* OTW-4 account (Kings & Dice account, shared with the dice game).
+/* OTW-4 account (King of the 401 truck account — separate from
+   Kings & Dice; the server still accepts legacy dice tokens for
+   companies/cloud/boards as a fallback).
    Stored on-device like other prefs: kot401.account = {playerToken, accountId, username}.
    The password is NEVER stored, logged or displayed. */
 var KOT_ACCT = null;
@@ -7541,7 +7809,7 @@ function cbRender(){
     if (tabCo){ tabCo.classList.toggle('lock', !unlockedCo); tabCo.textContent = unlockedCo ? 'Company' : 'Company 🔒'; }
     html = unlockedCo
       ? '<div class="sys">🏢 You are signed in and a member of an online company, so this channel is unlocked — but the company chat relay arrives in a later update. Sending is disabled until then; nothing here is faked.</div>'
-      : '<div class="sys">🔒 Company channel: sign in with your Kings &amp; Dice account and join an online company (Career &amp; Company → Online Company) to unlock this tab. There is no fake sending.</div>';
+      : '<div class="sys">🔒 Company channel: sign in with your King of the 401 account and join an online company (Career &amp; Company → Online Company) to unlock this tab. There is no fake sending.</div>';
   } else {
     var msgs = CB.hist[CB.ch].filter(function(m){ return m.mine || !cbIsMuted(m.name); });
     if (!msgs.length) html = '<div class="sys">' + (CB.ch === 'convoy' ? 'No convoy messages yet.' : 'Quiet on Local — AI haulers on the corridor post here when something real happens.') + '</div>';
@@ -9957,10 +10225,13 @@ renderCareer();
 "use strict";
 /* =====================================================================
    OTW-4 — SHARED COMPANIES + AUTHORITATIVE CO-OP (client wiring)
-   · Account: Kings & Dice account over the server's MAIN WebSocket
-     ({type:'login'|'register'} → authOk {playerToken, account}).
-     Token stored on-device as kot401.account. Password never stored,
-     logged or displayed. Signing in rotates the account session.
+   · Account: King of the 401 truck account over the server's MAIN
+     WebSocket (truckRegister/truckLogin → truckAuthOk; the client
+     wiring lives in the TRUCK ACCOUNTS block at the end of this
+     file). Token stored on-device as kot401.account {playerToken}.
+     Password never stored, logged or displayed. Truck accounts are
+     separate from Kings & Dice; the server still accepts legacy
+     dice tokens for companies/cloud/boards as a fallback.
    · Companies: event kind 'co:op' over the EXISTING /truck convoy
      socket, data {op, token, reqId, ...args}; replies arrive as
      'co:result' (requester-only). Server is the authority on roles
@@ -14253,7 +14524,9 @@ if (!P5.empire.bench) { try { empireBenchmark(100); } catch (e){} }
 <script>
 "use strict";
 /* =====================================================================
-   CLOUD SAVES — career profile sync on the Kings & Dice account.
+   CLOUD SAVES — career profile sync on the King of the 401 truck
+   account. (The server still accepts legacy Kings & Dice tokens
+   for this service as a fallback.)
    Protocol (server already live): over the MAIN WebSocket (AUTH_URL),
    short-lived socket per call like the OTW-4 sign-in flow, reqId
    correlation, 15 s timeout, socket-closed = failure, never fake
@@ -14262,7 +14535,7 @@ if (!P5.empire.bench) { try { empireBenchmark(100); } catch (e){} }
      {type:'profile:put', playerToken, data, baseRev}
        data is the v6 save document ITSELF (collectSaveDoc) — no envelope.
    The token is re-read from kot401.account at the moment of EVERY call
-   (sign-in rotates it). Sync is never automatic: only the read-only
+   (each sign-in issues a fresh truck token). Sync is never automatic: only the read-only
    profile:get status check runs on sign-in / tab open. Push and Pull
    are deliberate taps. Sync memory (rev / timestamps) lives in
    kot401.cloud — device-local, deliberately NOT in SAVE_KEYS, so it
@@ -14367,7 +14640,7 @@ async function cloudFetchStatus(){
 }
 async function cloudPush(baseRevOverride){
   var acct = csReadAcct();
-  if (!acct){ CS.msg = 'Sign in above first — cloud saves ride your Kings & Dice account.'; CS.msgOk = false; csRerender(); return; }
+  if (!acct){ CS.msg = 'Sign in above first — cloud saves ride your King of the 401 account.'; CS.msgOk = false; csRerender(); return; }
   if (CS.busy) return;
   var doc;
   try { doc = collectSaveDoc(); } catch (e){ doc = null; }
@@ -14401,7 +14674,7 @@ async function cloudPush(baseRevOverride){
 }
 async function cloudPullTap(){
   var acct = csReadAcct();
-  if (!acct){ CS.msg = 'Sign in above first — cloud saves ride your Kings & Dice account.'; CS.msgOk = false; csRerender(); return; }
+  if (!acct){ CS.msg = 'Sign in above first — cloud saves ride your King of the 401 account.'; CS.msgOk = false; csRerender(); return; }
   if (CS.busy) return;
   CS.busy = true; CS.msg = 'Checking the cloud for your profile…'; CS.msgOk = true; csRerender();
   var res = await csSend({ type: 'profile:get', playerToken: acct.playerToken, reqId: 'p' + (++CS.seq) + '-' + Math.floor(Math.random() * 1e6) });
@@ -14498,7 +14771,7 @@ function csRenderInto(c){
   var acct = csReadAcct();
   if (!acct){
     html += '<div class="bizCard"><h3>☁ Cloud saves — your career, on your account</h3>' +
-      '<div class="bcMeta">Cloud saves store your career profile (the same v6 save this device keeps) against your <b>Kings &amp; Dice account</b>, so your company, fleet and cash follow you to any device you sign in on.<br/><br/>' +
+      '<div class="bcMeta">Cloud saves store your career profile (the same v6 save this device keeps) against your <b>King of the 401 account</b>, so your company, fleet and cash follow you to any device you sign in on.<br/><br/>' +
       'Sign in with the free account above to use them — solo and offline play never need an account, and your local save keeps working exactly as it does now. Nothing ever uploads or downloads on its own: Push and Pull are always deliberate taps, and a pull backs up this device\u2019s profile first.</div></div>';
     host.innerHTML = html;
     c.appendChild(host);
@@ -14527,7 +14800,7 @@ function csRenderInto(c){
     '<button type="button" id="csPush"' + (CS.busy ? ' disabled' : '') + '>⬆ Push — upload this device</button>' +
     '<button type="button" id="csPull"' + (CS.busy ? ' disabled' : '') + '>⬇ Pull — download cloud</button>' +
     '<button type="button" class="plain" id="csRefresh"' + (CS.busy ? ' disabled' : '') + '>↻ Refresh</button></div>' +
-    '<p style="font-size:12px;color:var(--dim);line-height:1.5;margin:8px 0 0">Deliberate taps only — nothing syncs on its own beyond the read-only status check when you sign in or open this tab. Signing in rotates your account session, so the freshest token is read at the moment of every sync.</p></div>';
+    '<p style="font-size:12px;color:var(--dim);line-height:1.5;margin:8px 0 0">Deliberate taps only — nothing syncs on its own beyond the read-only status check when you sign in or open this tab. Your King of the 401 session token is read fresh at the moment of every sync.</p></div>';
   host.innerHTML = html;
   c.appendChild(host);
   var r = host.querySelector('#csRefresh'); if (r) r.addEventListener('click', function(){ initAudio(); CS.checkedKey = ''; cloudFetchStatus(); });
@@ -19053,7 +19326,7 @@ function bdRenderInto(c){
     /* signed OUT — honest explainer, NO working-looking buttons
        (mirrors the Cloud Save signed-out pattern exactly) */
     html += '<div class="bizCard"><h3>🏆 Corridor Champions — weekly boards</h3>' +
-      '<div class="bcMeta">Three weekly boards for signed-in drivers, reset every Monday (Toronto): <b>🥇 Cleanest runs</b> (fewest safety incidents), <b>🎯 Best back-ins</b> (your best dock score) and <b>💰 Most profitable</b> (net ledger dollars). Your runs are tallied on this device as you drive and posted to the boards from your <b>Kings &amp; Dice account</b>.<br/><br/>' +
+      '<div class="bcMeta">Three weekly boards for signed-in drivers, reset every Monday (Toronto): <b>🥇 Cleanest runs</b> (fewest safety incidents), <b>🎯 Best back-ins</b> (your best dock score) and <b>💰 Most profitable</b> (net ledger dollars). Your runs are tallied on this device as you drive and posted to the boards from your <b>King of the 401 account</b>.<br/><br/>' +
       'Sign in with the free account above to see the boards and post your week — solo and offline play never need an account, and your tally keeps counting locally either way.</div></div>';
     host.innerHTML = html;
     c.appendChild(host);
@@ -24311,6 +24584,454 @@ if (window.K401){
   /* No interval, no hooks: there is nothing to apply, so there is
      nothing to sync. The surfaces above are the whole stage. */
 })();
+</script>
+<script>
+"use strict";
+/* =====================================================================
+   TRUCKS2 REGRESSION EXTENSION (Realistic Trucks — Stage A)
+   Wraps K401.visuals.regression (all prior checks run first,
+   untouched) and merges the Stage A checks: flag default contract,
+   tyre normal map present iff the flag is on, true-dual structure in
+   a fresh probe build, GLB pipeline still armed with an empty
+   manifest, dealer ids intact, and the player rig's live visible
+   triangle count against the 14k Stage A budget. Also exposes
+   K401.trucks2 for probes, including the Phase 2 proportions audit.
+   ===================================================================== */
+(function(){
+  if (!window.K401 || !window.K401.visuals || typeof window.K401.visuals.regression !== 'function') return;
+  var prevRegression = window.K401.visuals.regression;
+  window.K401.visuals.regression = function(){
+    var r = prevRegression.apply(this, arguments);
+    try {
+      var c = {};
+      var stored = null; try { stored = localStorage.getItem('kot401.trucks2'); } catch (e){}
+      var on = (typeof trucks2On === 'function') && trucks2On();
+      c.flagDefault = on === (stored !== 'off');
+      c.tyreNormalMap = !!PV_WHEEL_SIDE[0].normalMap === on;
+      c.tyreColourMap = !!PV_WHEEL_SIDE[0].map;
+      c.pipelineArmed = (typeof pvBuildGLTF === 'function') && !!PV_SLOTS.fc515 && PV_SLOTS.fc515.status !== 'loaded';
+      c.manifestEmpty = !PV_MANIFEST || !PV_MANIFEST.models || Object.keys(PV_MANIFEST.models).length === 0;
+      c.dealerIdsIntact = ['kd350', 'np420', 'vt530', 'np610', 'tn700', 'fc515'].every(function(id){ return DEALER.some(function(d){ return d.id === id; }); });
+      /* true duals: a fresh single aero build's drive positions must
+         hold two tyre meshes per side when on, one wide tyre when off */
+      c.dualStructure = (function(){
+        try {
+          var probe = new THREE.Group();
+          var arr = { steer: [], drive: [] };
+          buildPremiumTractor(probe, { style: 'aero', variant: { sleeper: 'day', stacks: 2 }, color: 0x445566, badge: 'PROBE', arrays: arr });
+          if (arr.drive.length !== 6) return false;   /* 2 steer spins + 4 drive entries */
+          var tyres = 0;
+          arr.drive.slice(2).forEach(function(g){ g.traverse(function(o){ if (o.isMesh && o.geometry && o.geometry.parameters && o.geometry.parameters.radiusTop > 0.45) tyres++; }); });
+          return on ? (tyres === 8) : (tyres === 4);
+        } catch (e){ return false; }
+      })();
+      function triCount(root){
+        var n = 0;
+        root.traverseVisible(function(o){
+          if (o.isMesh || o.isInstancedMesh){
+            var g = o.geometry; if (!g) return;
+            var t = g.index ? g.index.count / 3 : (g.attributes.position ? g.attributes.position.count / 3 : 0);
+            if (o.isInstancedMesh) t *= o.count;
+            n += t;
+          }
+        });
+        return Math.round(n);
+      }
+      c.playerRigTris = triCount(truck);
+      c.rigBudget = !on || c.playerRigTris <= 14000;
+      c.proportions = {
+        widthM: 2.50, sleeperTopM: 4.00, tyreODM: 1.06, fifthWheelYM: 1.14,
+        steerToTandemM: 4.05,
+        note: 'Width/height/tyre/fifth-wheel match Cascadia-class references. Steer-to-tandem 4.05 m is ~0.45 m under the real sleeper range (178 in+): it is a shared physics hard point for every truck and the trailer coupling, deliberately NOT moved in a visual stage.'
+      };
+      r.checks.trucks2 = c;
+      var ok = true; for (var k in c){ if (c[k] === false) ok = false; }
+      r.ok = r.ok && ok;
+    } catch (e){ r.checks.trucks2 = { error: String(e && e.message || e) }; r.ok = false; }
+    return r;
+  };
+  window.K401.trucks2 = {
+    on: function(){ return (typeof trucks2On === 'function') ? trucks2On() : null; },
+    stage: 'A',
+    showcase: 'fc515',
+    glb: 'Pipeline armed, manifest empty: no legally clean realistic semi GLB is installed; the showcase is procedural, per the spec fallback. No model is claimed.',
+    maps: function(){
+      var m = (typeof pvTyreMaps === 'function') ? pvTyreMaps() : null;
+      return { tyre: !!m, normalMap: !!(m && m.normalMap), brushed: (typeof pvBrushedChrome === 'function'),
+               paintAO: (typeof pvPaintAOTexture === 'function'), paintRough: (typeof pvPaintRoughTexture === 'function') };
+    }
+  };
+})();
+</script>
+<script>
+"use strict";
+/* =====================================================================
+   TRUCK ACCOUNTS — King of the 401's OWN server accounts (OTW-4.1)
+   · King of the 401 no longer borrows the Kings & Dice account. It
+     has its own account system on the same server, over the same
+     MAIN WebSocket (AUTH_URL), hello first:
+       {type:'truckRegister'|'truckLogin', username, password}
+         → truckAuthOk {truckToken, account, googleAuth, claimed}
+         | truckAuthError {code, message}  (message shown verbatim)
+       {type:'truckLogout', truckToken} → truckAuthOk (idempotent)
+       Google: full-page hop to /auth/google/truck/start; the return
+       lands back here with ?truckGoogleCode= / ?truckGoogleError=,
+       redeemed via {type:'truckAuthGoogleRedeem', code}.
+       Google-created accounts start needsName (username null) until
+       {type:'truckClaimName', truckToken, name} names them.
+       Signed-in password accounts link Google via
+       {type:'truckLinkGoogleStart', truckToken} → truckGoogleLink.
+   · The session is stored EXACTLY as before — kot401.account =
+     {playerToken: <truckToken>, accountId, username} — so coCall,
+     csSend and bdSend keep working untouched: the server resolves
+     truck tokens first and legacy dice tokens second.
+   · The password is NEVER stored, logged or displayed.
+   · Everything below is wrap-don't-edit: authAttempt / authSignOut /
+     bizOnline / acctHelloFields / handleRelaySys are replaced or
+     wrapped here; no earlier block was modified for behaviour.
+   ===================================================================== */
+var TRK_GOOGLE_START_URL = 'https://kings-and-dice-server.onrender.com/auth/google/truck/start';
+var TRK_PICK_NAME_MSG = 'Almost there — pick a driver name to finish your account.';
+var TRK_CLAIMED_TOAST = 'Your existing company, cloud save and leaderboard entries were moved to your new King of the 401 account.';
+var TRKACCT = {
+  googleAvailable: null,        // null = not probed yet; welcome frames carry truckGoogleAuth
+  bootGoogleError: null,        // friendly text captured from ?truckGoogleError= at boot
+  bootGoogleErrorShown: false
+};
+window.K401 = window.K401 || {};
+window.K401.truckAcct = TRKACCT;
+
+function trkLsGet(k){ try { return localStorage.getItem(k); } catch (e){ return null; } }
+function trkLsSet(k, v){ try { localStorage.setItem(k, v); } catch (e){} }
+function trkLsDel(k){ try { localStorage.removeItem(k); } catch (e){} }
+function trkPending(){ try { var p = JSON.parse(trkLsGet('kot401.truckPending') || 'null'); return (p && p.truckToken) ? p : null; } catch (e){ return null; } }
+function trkMeta(){ try { return JSON.parse(trkLsGet('kot401.truckMeta') || 'null'); } catch (e){ return null; } }
+function trkMetaSave(googleLinked){ trkLsSet('kot401.truckMeta', JSON.stringify({ googleLinked: !!googleLinked })); }
+
+/* Shared truckAuthOk session-save path (login/register, Google
+   redeem, claim-name). Returns {pending:true} while the account
+   still needs a driver name — acctSave is NOT called then, because
+   the boot restore requires a username. */
+function trkApplyAuthOk(m){
+  if (m && typeof m.googleAuth === 'boolean') TRKACCT.googleAvailable = m.googleAuth;
+  var acct = (m && m.account) || {};
+  if (m && m.claimed && m.claimed.claimed) toast(TRK_CLAIMED_TOAST, 6);
+  if (acct.needsName){
+    trkLsSet('kot401.truckPending', JSON.stringify({ truckToken: String((m && m.truckToken) || ''), accountId: acct.id != null ? String(acct.id) : '' }));
+    trkMetaSave(!!acct.googleLinked);
+    return { pending: true, username: '' };
+  }
+  var uname = acct.username != null ? String(acct.username) : '';
+  acctSave({ playerToken: String((m && m.truckToken) || ''), accountId: acct.id != null ? String(acct.id) : '', username: uname });
+  trkMetaSave(!!acct.googleLinked);
+  return { pending: false, username: uname };
+}
+TRKACCT.applyAuthOk = trkApplyAuthOk;
+
+/* One short-lived hello-first main-socket call, in authAttempt's
+   discipline: the payload goes out on the welcome frame (which also
+   refreshes googleAvailable), truckAuthOk / truckAuthError / a
+   generic {type:'error'} frame / truckGoogleLink each settle once,
+   and a timeout backstop closes the socket. */
+function trkCall(helloName, payload, handlers, timeoutMs){
+  handlers = handlers || {};
+  var settled = false, sent = false, ws = null, to = null;
+  function finish(){ if (settled) return false; settled = true; if (to) clearTimeout(to); try { if (ws) ws.close(); } catch (e){} return true; }
+  to = setTimeout(function(){ if (finish() && handlers.timeout) handlers.timeout(); }, timeoutMs || 20000);
+  try { ws = new WebSocket(AUTH_URL); } catch (e){ settled = true; clearTimeout(to); if (handlers.fail) handlers.fail(); return null; }
+  ws.onopen = function(){ try { ws.send(JSON.stringify({ type: 'hello', name: helloName || 'K401' })); } catch (e){} };
+  ws.onmessage = function(ev){
+    var m; try { m = JSON.parse(ev.data); } catch (e){ return; }
+    if (!m || settled) return;
+    if (m.type === 'welcome' || typeof m.truckGoogleAuth !== 'undefined'){
+      if (typeof m.truckGoogleAuth === 'boolean') TRKACCT.googleAvailable = m.truckGoogleAuth;
+      if (!sent && payload){ sent = true; try { ws.send(JSON.stringify(payload)); } catch (e){} }
+      return;
+    }
+    if (m.type === 'truckAuthOk'){ if (finish() && handlers.ok) handlers.ok(m); return; }
+    if (m.type === 'truckGoogleLink'){ if (finish() && handlers.link) handlers.link(m); return; }
+    if (m.type === 'truckAuthError'){ if (finish() && handlers.err) handlers.err(m); return; }
+    if (m.type === 'error'){ if (finish() && handlers.err) handlers.err({ code: 'ERROR', message: m.message || 'The account server reported an error.' }); return; }
+  };
+  ws.onerror = function(){ try { if (ws) ws.close(); } catch (e){} };
+  ws.onclose = function(){ if (settled) return; settled = true; if (to) clearTimeout(to); if (handlers.closed) handlers.closed(); };
+  return ws;
+}
+
+/* ---------- (a) authAttempt: truck accounts, original UX contract ---------- */
+authAttempt = function(mode){
+  var uEl = document.getElementById('ocUser'), pEl = document.getElementById('ocPass');
+  var username = uEl ? uEl.value.trim() : '', password = pEl ? pEl.value : '';
+  if (!username || !password){ ocSetMsg('Enter a username and a password first.', false); return; }
+  if (OC.busy) return;
+  OC.busy = true; ocSetMsg((mode === 'register' ? 'Creating account…' : 'Signing in…'), true);
+  trkCall(username, { type: mode === 'register' ? 'truckRegister' : 'truckLogin', username: username, password: password }, {
+    ok: function(m){
+      OC.busy = false;
+      if (pEl) pEl.value = '';
+      var r = trkApplyAuthOk(m);
+      if (r.pending){ ocSetMsg(TRK_PICK_NAME_MSG, true); return; }
+      OC.loadedFor = ''; OC.detail = null; OC.detailId = null;
+      ocSetMsg('Signed in as ' + r.username + '.', true);
+      toast('Signed in as ' + r.username, 3);
+    },
+    err: function(m){
+      OC.busy = false;
+      if (pEl) pEl.value = '';
+      ocSetMsg(m.message || 'Sign-in failed — check the username and password.', false);
+    },
+    timeout: function(){ OC.busy = false; ocSetMsg('The account server did not answer in time — nothing was changed. (Some test sandboxes block external sockets entirely.)', false); },
+    closed: function(){ OC.busy = false; ocSetMsg('The account connection closed before sign-in completed — nothing was changed.', false); },
+    fail: function(){ OC.busy = false; ocSetMsg('Could not open the account connection on this device.', false); }
+  }, 20000);
+};
+authAttempt._truck = true;
+
+/* ---------- (b) authSignOut: best-effort truckLogout, then the original ---------- */
+var _authSignOutOrigTrk = authSignOut;
+authSignOut = function(){
+  try {
+    var tok = null;
+    if (typeof KOT_ACCT !== 'undefined' && KOT_ACCT && KOT_ACCT.playerToken) tok = KOT_ACCT.playerToken;
+    if (!tok){ var p = trkPending(); if (p && p.truckToken) tok = p.truckToken; }
+    if (tok) trkCall('K401', { type: 'truckLogout', truckToken: tok }, {}, 4000);
+  } catch (e){}
+  trkLsDel('kot401.truckPending');
+  trkLsDel('kot401.truckMeta');
+  return _authSignOutOrigTrk.apply(this, arguments);
+};
+authSignOut._truck = true;
+
+/* ---------- (c) bizOnline: patch the rendered Online Company tab ---------- */
+function trkFindSignInCard(c){
+  var cards = c.querySelectorAll('.bizCard');
+  for (var i = 0; i < cards.length; i++){
+    var h = cards[i].querySelector('h3');
+    if (h && h.textContent.indexOf('Sign in') === 0) return cards[i];
+  }
+  return null;
+}
+function trkRenderClaimCard(card, pending){
+  card.innerHTML =
+    '<h3>Pick your driver name</h3>' +
+    '<div class="bcMeta">Your Google sign-in created a King of the 401 account — it just needs a driver name before companies, cloud saves and the boards can use it.</div>' +
+    '<label class="lbl">Driver name</label><input class="bizInput" id="ocClaimName" type="text" maxlength="20" placeholder="3–20 letters, numbers or _" autocomplete="username" />' +
+    '<div class="bizActions"><button type="button" id="ocClaimGo">Save name</button></div>';
+  function go(){
+    var el = card.querySelector('#ocClaimName');
+    var name = el ? el.value.trim() : '';
+    if (!name){ ocSetMsg('Enter a driver name first.', false); return; }
+    trkCall(name, { type: 'truckClaimName', truckToken: pending.truckToken, name: name }, {
+      ok: function(m){
+        var r = trkApplyAuthOk(m);
+        trkLsDel('kot401.truckPending');
+        trkMetaSave(true);
+        if (!r.pending) toast('Signed in as ' + r.username, 3);
+        renderBiz();
+      },
+      err: function(m){ ocSetMsg(m.message || 'That name could not be saved.', false); },
+      timeout: function(){ ocSetMsg('The account server did not answer in time — nothing was changed.', false); },
+      closed: function(){ ocSetMsg('The account connection closed before the name was saved — nothing was changed.', false); },
+      fail: function(){ ocSetMsg('Could not open the account connection on this device.', false); }
+    }, 20000);
+  }
+  var b = card.querySelector('#ocClaimGo'); if (b) b.addEventListener('click', function(){ initAudio(); go(); });
+  var inp = card.querySelector('#ocClaimName'); if (inp) inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
+}
+function trkPatchOnline(c){
+  if (!c) return;
+  var signedIn = (typeof KOT_ACCT !== 'undefined' && KOT_ACCT);
+  if (!signedIn){
+    var card = trkFindSignInCard(c);
+    if (!card) return;
+    var pending = trkPending();
+    if (pending){ trkRenderClaimCard(card, pending); return; }
+    var h3 = card.querySelector('h3');
+    if (h3) h3.textContent = 'Sign in — King of the 401 account';
+    var u = card.querySelector('#ocUser');
+    if (u) u.setAttribute('placeholder', 'Your King of the 401 username');
+    var ps = card.querySelectorAll('p');
+    for (var i = 0; i < ps.length; i++){
+      if (ps[i].textContent.indexOf('Uses your Kings & Dice account') === 0){
+        ps[i].textContent = 'King of the 401 has its OWN accounts — separate from Kings & Dice. Signing in here never touches the dice game, and the dice game never signs you out here. Your password is never stored or shown; only a session token is kept on this device.';
+      }
+    }
+    if (!card.querySelector('#ocGoogle')){
+      var row = card.querySelector('.bizActions');
+      if (row && row.parentNode){
+        var wrap = document.createElement('div');
+        wrap.className = 'bizActions';
+        var gb = document.createElement('button');
+        gb.type = 'button'; gb.id = 'ocGoogle'; gb.textContent = 'Continue with Google';
+        wrap.appendChild(gb);
+        row.parentNode.insertBefore(wrap, row.nextSibling);
+        gb.addEventListener('click', function(){
+          initAudio();
+          if (TRKACCT.googleAvailable === false){ ocSetMsg('Google sign-in is not switched on for King of the 401 accounts yet — use a username and password for now.', false); return; }
+          if (TRKACCT.googleAvailable === true){ location.href = TRK_GOOGLE_START_URL; return; }
+          ocSetMsg('Still checking whether Google sign-in is available — try again in a moment.', false);
+        });
+      }
+    }
+    if (TRKACCT.bootGoogleError && !TRKACCT.bootGoogleErrorShown){
+      TRKACCT.bootGoogleErrorShown = true;
+      ocSetMsg(TRKACCT.bootGoogleError, false);
+    }
+    return;
+  }
+  /* signed in: offer Google linking while this account has none */
+  var meta = trkMeta();
+  if (meta && meta.googleLinked === false && TRKACCT.googleAvailable !== false){
+    var so = c.querySelector('#ocSignOut');
+    if (so && so.parentNode && !c.querySelector('#ocLinkGoogle')){
+      var lb = document.createElement('button');
+      lb.type = 'button'; lb.className = 'plain'; lb.id = 'ocLinkGoogle'; lb.textContent = 'Link Google account';
+      so.parentNode.insertBefore(lb, so.nextSibling);
+      lb.addEventListener('click', function(){
+        initAudio();
+        var tok = (typeof KOT_ACCT !== 'undefined' && KOT_ACCT) ? KOT_ACCT.playerToken : '';
+        if (!tok){ ocSetMsg('Sign in first, then link Google.', false); return; }
+        trkCall(KOT_ACCT.username || 'K401', { type: 'truckLinkGoogleStart', truckToken: tok }, {
+          link: function(m){ if (m && m.url) location.href = m.url; },
+          err: function(m){ ocSetMsg(m.message || 'Google linking could not start.', false); },
+          timeout: function(){ ocSetMsg('The account server did not answer in time — nothing was changed.', false); },
+          closed: function(){ ocSetMsg('The account connection closed before Google linking could start — nothing was changed.', false); },
+          fail: function(){ ocSetMsg('Could not open the account connection on this device.', false); }
+        }, 20000);
+      });
+    }
+  }
+}
+var _bizOnlinePrevTrk = bizOnline;
+bizOnline = function(c){ _bizOnlinePrevTrk(c); try { trkPatchOnline(c); } catch (e){} };
+bizOnline._truck = true;
+
+/* ---------- (e) acctHelloFields: signed-in hellos also carry the token ---------- */
+var _acctHelloFieldsOrigTrk = acctHelloFields;
+acctHelloFields = function(){
+  var f = _acctHelloFieldsOrigTrk.apply(this, arguments);
+  if (typeof KOT_ACCT !== 'undefined' && KOT_ACCT && KOT_ACCT.playerToken) f.token = KOT_ACCT.playerToken;
+  return f;
+};
+acctHelloFields._truck = true;
+
+/* ---------- (f) handleRelaySys: normalize roomVersion → roomVer ---------- */
+var _handleRelaySysOrigTrk = handleRelaySys;
+handleRelaySys = function(d){
+  if (d && d.roomVersion && !d.roomVer) d.roomVer = d.roomVersion;
+  return _handleRelaySysOrigTrk.apply(this, arguments);
+};
+handleRelaySys._truck = true;
+
+/* ---------- (d) boot-time Google return handling ---------- */
+TRKACCT.parseBootParams = function(search){
+  var out = { code: null, error: null };
+  try {
+    var q = String(search || '').replace(/^\?/, '');
+    if (!q) return out;
+    q.split('&').forEach(function(pair){
+      if (!pair) return;
+      var i = pair.indexOf('=');
+      var k = decodeURIComponent(i < 0 ? pair : pair.slice(0, i));
+      var v = i < 0 ? '' : decodeURIComponent(pair.slice(i + 1).replace(/\+/g, ' '));
+      if (k === 'truckGoogleCode') out.code = v;
+      if (k === 'truckGoogleError') out.error = v;
+    });
+  } catch (e){}
+  return out;
+};
+TRKACCT.friendlyGoogleError = function(code){
+  return code === 'access_denied'
+    ? 'Google sign-in was cancelled.'
+    : 'Google sign-in did not finish — try again, or use a username and password.';
+};
+function trkStripGoogleParams(){
+  try {
+    var u = new URL(location.href);
+    u.searchParams.delete('truckGoogleCode');
+    u.searchParams.delete('truckGoogleError');
+    history.replaceState(null, '', u.toString());
+  } catch (e){}
+}
+function trkBootGoogle(){
+  var p = TRKACCT.parseBootParams(location.search || '');
+  if (p.error){
+    TRKACCT.bootGoogleError = TRKACCT.friendlyGoogleError(p.error);
+    toast(TRKACCT.bootGoogleError, 5);
+    trkStripGoogleParams();
+    return;
+  }
+  if (!p.code) return;
+  trkCall('K401', { type: 'truckAuthGoogleRedeem', code: p.code }, {
+    ok: function(m){
+      var r = trkApplyAuthOk(m);
+      if (r.pending){
+        toast(TRK_PICK_NAME_MSG, 5);
+      } else {
+        OC.loadedFor = ''; OC.detail = null; OC.detailId = null;
+        toast('Signed in with Google as ' + r.username, 4);
+        if (typeof bizTab !== 'undefined' && bizTab === 'online' && typeof renderBiz === 'function') renderBiz();
+      }
+      trkStripGoogleParams();
+    },
+    err: function(m){ toast((m && m.message) || TRKACCT.friendlyGoogleError(''), 5); trkStripGoogleParams(); },
+    timeout: function(){ toast('Google sign-in did not finish — the account server did not answer in time.', 5); trkStripGoogleParams(); },
+    closed: function(){ trkStripGoogleParams(); },
+    fail: function(){ trkStripGoogleParams(); }
+  }, 20000);
+}
+
+/* ---------- (g) boot hello probe: is Google switched on for truck accounts? ---------- */
+function trkProbeGoogle(){
+  var done = false, ws = null, to = null;
+  function close(){ if (done) return; done = true; if (to) clearTimeout(to); try { if (ws) ws.close(); } catch (e){} }
+  try { ws = new WebSocket(AUTH_URL); } catch (e){ return; }
+  to = setTimeout(close, 8000);
+  ws.onopen = function(){ try { ws.send(JSON.stringify({ type: 'hello', name: 'K401' })); } catch (e){} };
+  ws.onmessage = function(ev){
+    var m; try { m = JSON.parse(ev.data); } catch (e){ return; }
+    if (!m) return;
+    if (m.type === 'welcome' || typeof m.truckGoogleAuth !== 'undefined'){
+      if (typeof m.truckGoogleAuth === 'boolean') TRKACCT.googleAvailable = m.truckGoogleAuth;
+      close();
+    }
+  };
+  ws.onerror = function(){ close(); };
+}
+
+trkBootGoogle();
+trkProbeGoogle();
+
+/* ---------- (h) regression ---------- */
+TRKACCT.regression = function(){
+  var checks = {};
+  try {
+    checks.wrapsInstalled = !!(authAttempt._truck && authSignOut._truck && bizOnline._truck && acctHelloFields._truck && handleRelaySys._truck);
+  } catch (e){ checks.wrapsInstalled = false; }
+  try {
+    var probe = { playerToken: 'probe-token', accountId: '42', username: 'ProbeDriver' };
+    var rt = JSON.parse(JSON.stringify(probe));
+    checks.storageShape = typeof rt.playerToken === 'string' && typeof rt.accountId === 'string' && typeof rt.username === 'string';
+    var cur = null; try { cur = JSON.parse(trkLsGet('kot401.account') || 'null'); } catch (e){}
+    checks.storedShapeOk = !cur || (typeof cur.playerToken === 'string' && typeof cur.username === 'string');
+  } catch (e){ checks.storageShape = false; checks.storedShapeOk = false; }
+  try {
+    var p1 = TRKACCT.parseBootParams('?truckGoogleCode=abc123&x=1');
+    var p2 = TRKACCT.parseBootParams('?truckGoogleError=access_denied');
+    checks.googleBootParser = p1.code === 'abc123' && !p1.error && p2.error === 'access_denied' && !p2.code
+      && TRKACCT.friendlyGoogleError('access_denied') === 'Google sign-in was cancelled.';
+  } catch (e){ checks.googleBootParser = false; }
+  try {
+    var hf = acctHelloFields();
+    checks.helloToken = (typeof KOT_ACCT !== 'undefined' && KOT_ACCT)
+      ? (hf && hf.token === KOT_ACCT.playerToken)
+      : (hf && !('token' in hf));
+  } catch (e){ checks.helloToken = false; }
+  checks.clientVer = (typeof CLIENT_VER !== 'undefined' && CLIENT_VER === 'OTW4-1.0');
+  checks.authUrl = (typeof AUTH_URL !== 'undefined' && AUTH_URL === 'wss://kings-and-dice-server.onrender.com/');
+  var ok = Object.keys(checks).every(function(k){ return checks[k] === true; });
+  return { ok: ok, checks: checks, googleAvailable: TRKACCT.googleAvailable };
+};
 </script>
 </body>
 </html>
