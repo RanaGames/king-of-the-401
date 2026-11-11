@@ -46520,5 +46520,655 @@ if (typeof loFastTick === 'function'){
 })();
 </script>
 
+<script id="trafixScript">
+/* =====================================================================
+   TRAFFIC FIX (2026-11-11) — user report, same day the iOS fix was
+   phone-confirmed: "fix the ai driving on the wrong side of the
+   highway and make collisions — they can't drive through me and
+   vice versa." ONE appended module; nothing shipped is edited.
+
+   FLAG: localStorage 'kot401.trafix' !== 'off' (default ON).
+   OFF = shipped behaviour exactly: the distCarTick wrap delegates to
+   the captured original and the collision pass never runs.
+
+   FIX 1 — district loop cars keep RIGHT. The shipped DIST_CARS
+   systems (downtown loops, Steeles/Brampton, Vaughan, Barrie,
+   Hamilton, street pockets) drive their rectangle CENTRELINES:
+   opposing traffic shares one line down the middle of every street,
+   head-on. The side convention is screen-truth, proven from the
+   shipped code: the camera code names (fz,-fx) its "right vector",
+   so right of heading (hx,hz) is (-hz,hx) — the same convention the
+   RHT build's flipped mainline lanes satisfy (eastbound rides
+   z>0, fast lane median-side; the 410's northbound carriageway at
+   x=614.3 has its shoulder on the -x side). This module wraps
+   distCarTick with a faithful copy whose only steering change is
+   that each corner target is offset by a miter join so every leg's
+   lane sits exactly 2.2 m to the RIGHT of its own centreline
+   (tfOffsetTarget; tfLoopSide grades the offset sign per loop as a
+   regression guard — the plain right offset wins on all seven
+   shipped loops). The wrap also adds the one piece of following the
+   shipped district cars never had: braking for a player rig blocking
+   their lane (same stop-curve shape as the S7 cityComputeStop player
+   term). Mainline traffic, AI haulers, LO events and the S7 graph
+   cars were audited for lane side: mainline/haulers/events are
+   correct under loLaneZ/loLaneZ2 ×MZ and are NOT touched; the graph
+   cars' left offset (cityCarPos rides (hz,-hx)·2.2 — the exact
+   negative of the right vector, inherited from the pre-RHT mirror
+   era) lives inside the lo2city module's private scope and cannot
+   be reached append-only (recorded residual).
+
+   FIX 2 — two-way player <-> traffic solidity. A swept OBB pass runs
+   once per frame on its own rAF (all shipped movement for the frame
+   has completed by then). Bodies: player tractor + trailer; every
+   active traffic[] vehicle; every active AI hauler (tractor +
+   trailer); every DIST_CARS car. Each candidate pair is rewound by
+   its relative velocity and substepped (<= 0.5 m of relative travel
+   per substep, <= 8), so no closing speed in the game can tunnel.
+   On contact both bodies are placed at the contact configuration,
+   pushed out along the minimum-penetration axis split by inverse
+   mass (loaded player rig ~36 t class vs car 1.5 t … rig 32 t), and
+   given a momentum exchange (restitution 0.12) along the contact
+   normal; the remainder of the frame is then re-integrated with the
+   new velocities, so bodies are never left overlapping. Damage goes
+   through the EXISTING path only (S.damage + bumpCondition('impact',
+   amt), shared S.scrapeCd cooldown, the shipped toast/beep): silent
+   below 1.2 m/s closing so nudges don't spam, capped per hit.
+   Traffic can no longer shove through a stationary player: the mass
+   split moves the rig by ~4% of a car's penetration and the impulse
+   stops the car. Remote convoy rigs and traffic<->traffic pairs are
+   out of scope by design. Fail-safe: any missing global leaves the
+   pass inert; nothing is persisted; SAVE_KEYS untouched.
+   ===================================================================== */
+(function(){
+'use strict';
+var FLAG_KEY = 'kot401.trafix';
+function flagOn(){ try { return localStorage.getItem(FLAG_KEY) !== 'off'; } catch (e){ return true; } }
+var ON = flagOn();
+
+/* ================= TRAFIX-CORE-BEGIN =================
+   Pure cores: no game globals, no DOM. The verification harness
+   extracts exactly this span and exercises it against shipped data
+   extracts (lane tables, district loop arrays, the S7 offset
+   formula). Keep everything between the markers dependency-free. */
+var TF_LANE_OFF = 2.2;                 /* district lane offset (m) — matches the S7 street half-width class */
+var TF_MASS = { car: 1500, suv: 1900, pickup: 2200, van: 2400, straight: 9000, rig: 32000, bus: 12000, emergency: 2600 };
+var TF_RESTITUTION = 0.12;
+var TF_DMG_MIN_CLOSING = 1.2;          /* m/s — below this a contact is a nudge: no damage, no toast */
+var TF_DMG_CAP = 14;
+function tfClamp(v, a, b){ return v < a ? a : (v > b ? b : v); }
+/* right of a unit heading in game axes (three.js RH, y-up). Proven
+   against the shipped world: eastbound (1,0) -> (0,+1) = the slow
+   lane / shoulder side of the flipped mainline; northbound (0,1) ->
+   (-1,0) = the 410's west shoulder side for its 614.3 carriageway. */
+function tfRightOf(hx, hz){ return { rx: -hz, rz: hx }; }
+/* offset waypoint for one rectangle-loop corner: the corner wp is
+   shared by the incoming leg (prev -> wp) and the outgoing leg
+   (wp -> next). The driving target is wp shifted along the MITER of
+   the two legs' right vectors — (r1 + r2) / (1 + r1 . r2) x
+   TF_LANE_OFF — the standard miter join: on an axis rectangle each
+   adjoining lane line then sits EXACTLY TF_LANE_OFF to the right of
+   its own centreline (a plain average would halve the perpendicular
+   offset at every corner). */
+function tfOffsetTarget(prev, wp, next){
+  var d1x = wp[0] - prev[0], d1z = wp[1] - prev[1];
+  var l1 = Math.sqrt(d1x * d1x + d1z * d1z) || 1;
+  var r1 = tfRightOf(d1x / l1, d1z / l1);
+  var ox = r1.rx, oz = r1.rz;
+  if (next){
+    var d2x = next[0] - wp[0], d2z = next[1] - wp[1];
+    var l2 = Math.sqrt(d2x * d2x + d2z * d2z) || 1;
+    var r2 = tfRightOf(d2x / l2, d2z / l2);
+    var den = 1 + (r1.rx * r2.rx + r1.rz * r2.rz);
+    if (den > 0.25){ ox = (r1.rx + r2.rx) / den; oz = (r1.rz + r2.rz) / den; }
+  }
+  return { x: wp[0] + ox * TF_LANE_OFF, z: wp[1] + oz * TF_LANE_OFF, hx: d1x / l1, hz: d1z / l1 };
+}
+/* per-loop drive side: the wrap steers with ONE global offset sign
+   per loop (corner targets = tfOffsetTarget flipped by loopT);
+   tfLoopSide grades both signs with the per-leg right-offset
+   invariant and returns the winner. (The live wrap uses the
+   identical computation via tfLoopIndex.) */
+function tfLoopSide(pts){
+  /* The wrap steers with ONE global offset sign per loop: corner
+     targets = tfOffsetTarget(prev, wp, next) flipped by loopT.
+     TRUE invariant for a one-way circuit on two-way streets: on
+     EVERY leg, the lane line must sit TF_LANE_OFF to the RIGHT of
+     that leg's own heading (right = (-hz,hx), proven). Grade both
+     candidates by counting legs whose lane midpoint is offset
+     > +1.5 m along the leg's right vector; return the winner. With
+     the proven right vector the plain right offset (+1) wins on
+     every shipped loop — the function stays as a regression guard:
+     if the right-vector convention ever flips, this flips with it. */
+  var n = pts.length;
+  function corners(loopT){
+    var cs = [];
+    for (var i = 0; i < n; i++){
+      var prev = pts[(i + n - 1) % n], wp = pts[i], next = pts[(i + 1) % n];
+      var t = tfOffsetTarget(prev, wp, next);
+      cs.push({ x: wp[0] + (t.x - wp[0]) * loopT, z: wp[1] + (t.z - wp[1]) * loopT });
+    }
+    return cs;
+  }
+  function grade(loopT){
+    var cs = corners(loopT), good = 0, total = 0;
+    for (var i = 0; i < n; i++){
+      var p0 = pts[i], p1 = pts[(i + 1) % n];
+      var A = { x: (cs[i].x + cs[(i + 1) % n].x) / 2, z: (cs[i].z + cs[(i + 1) % n].z) / 2 };
+      var C = { x: (p0[0] + p1[0]) / 2, z: (p0[1] + p1[1]) / 2 };
+      var dx = p1[0] - p0[0], dz = p1[1] - p0[1];
+      total++;
+      var len = Math.sqrt(dx * dx + dz * dz) || 1;
+      var r = tfRightOf(dx / len, dz / len);
+      var dot = (A.x - C.x) * r.rx + (A.z - C.z) * r.rz;
+      if (dot > 1.5) good++;
+    }
+    return { good: good, total: total };
+  }
+  var g1 = grade(1), g2 = grade(-1);
+  return g2.good > g1.good ? -1 : 1;
+}
+/* lane-side assertions over the shipped systems' own data.
+   lane = { mainline: [{dir, fastZ, slowZ}...], loops: [{name, pts}...],
+            graphFormula: 'left'|'right'|null }
+   Ruler (screen-truth, proven): right of heading (hx,hz) = (-hz,hx);
+   mainline: dir>0 lanes at z>0 with the fast lane median-side;
+   every loop leg's lane line sits TF_LANE_OFF to the RIGHT of its
+   own centreline (one-way circuits on two-way streets). */
+function tfLaneAssertions(d){
+  var checks = [], stats = {};
+  function ck(name, cond){ checks.push({ name: name, pass: !!cond }); }
+  (d.mainline || []).forEach(function(m, i){
+    ck('mainline dir' + m.dir + ' lanes on RHT side (#' + i + ')',
+       m.dir > 0 ? (m.fastZ > 0 && m.slowZ > m.fastZ) : (m.fastZ < 0 && m.slowZ < m.fastZ));
+  });
+  var loopsOk = 0, loopsTotal = 0, wrongLoops = [];
+  (d.loops || []).forEach(function(L){
+    loopsTotal++;
+    var n = L.pts.length, ok = true;
+    /* Grade the loop by its APPLIED corner construction (identical
+       to tfLoopSide's grading and to what the wrap steers by): the
+       corner targets under the chosen loopT, each leg's lane
+       midpoint measured against its own centreline. */
+    var loopT = tfLoopSide(L.pts);
+    var cs = [];
+    for (var i2 = 0; i2 < n; i2++){
+      var pv = L.pts[(i2 + n - 1) % n], wq = L.pts[i2], nx = L.pts[(i2 + 1) % n];
+      var tt = tfOffsetTarget(pv, wq, nx);
+      cs.push({ x: wq[0] + (tt.x - wq[0]) * loopT, z: wq[1] + (tt.z - wq[1]) * loopT });
+    }
+    for (var a = 0; a < n; a++){
+      var A = { x: (cs[a].x + cs[(a + 1) % n].x) / 2, z: (cs[a].z + cs[(a + 1) % n].z) / 2 };
+      var C0 = L.pts[a], C1 = L.pts[(a + 1) % n];
+      var CM = { x: (C0[0] + C1[0]) / 2, z: (C0[1] + C1[1]) / 2 };
+      var dxA = C1[0] - C0[0], dzA = C1[1] - C0[1];
+      var lenA = Math.sqrt(dxA * dxA + dzA * dzA) || 1;
+      var rA = tfRightOf(dxA / lenA, dzA / lenA);
+      /* TRUE invariant: the leg's lane midpoint sits TF_LANE_OFF
+         (2.2 m, tolerance 0.7) to the RIGHT of the leg centreline. */
+      var dotR = (A.x - CM.x) * rA.rx + (A.z - CM.z) * rA.rz;
+      if (!(dotR > 1.5)) ok = false;
+    }
+    if (ok) loopsOk++; else wrongLoops.push(L.name);
+    ck('district loop right-side: ' + L.name, ok);
+  });
+  stats.loopsOk = loopsOk; stats.loopsTotal = loopsTotal; stats.wrongLoops = wrongLoops;
+  if (d.graphFormula) stats.graphOffsetSide = d.graphFormula;   /* recorded finding, not gated */
+  var okAll = checks.every(function(c){ return c.pass; });
+  return { ok: okAll, checks: checks, stats: stats };
+}
+/* ---- OBB (2D, x/z plane) ---- */
+function tfMakeBody(x, z, hx, hz, hl, hw, vx, vz, invM){
+  return { x: x, z: z, hx: hx, hz: hz, rx: -hz, rz: hx, hl: hl, hw: hw, vx: vx, vz: vz, invM: invM };
+}
+function tfRad(b, ax, az){ return Math.abs(ax * b.hx + az * b.hz) * b.hl + Math.abs(ax * b.rx + az * b.rz) * b.hw; }
+function tfSat(A, B){   /* A,B: bodies at given centres; normal points B -> A */
+  var dx = A.x - B.x, dz = A.z - B.z;
+  var axes = [[A.hx, A.hz], [A.rx, A.rz], [B.hx, B.hz], [B.rx, B.rz]];
+  var best = null;
+  for (var i = 0; i < 4; i++){
+    var ax = axes[i][0], az = axes[i][1];
+    var dist = dx * ax + dz * az;
+    var overlap = tfRad(A, ax, az) + tfRad(B, ax, az) - Math.abs(dist);
+    if (overlap <= 0) return null;
+    if (!best || overlap < best.pen){
+      var s = dist < 0 ? -1 : 1;
+      best = { pen: overlap, nx: ax * s, nz: az * s };
+    }
+  }
+  return best;
+}
+/* swept pair resolution on plain snapshots {A (player side), B
+   (traffic side)}: rewind by relative velocity, substep to first
+   contact, resolve there, re-integrate the rest of the frame.
+   Returns null (no contact) or { pen, nx, nz, closing, aDx, aDz,
+   aDvx, aDvz, bDx, bDz, bDvx, bDvz, maxOverlapAfter }. */
+function tfResolvePair(A, B, dt){
+  /* A and B are the bodies' positions at frame START (before this
+     frame's movement — the caller rewinds pre-move state into the
+     body snapshot). The sweep advances them to frame END. */
+  var rvx = A.vx - B.vx, rvz = A.vz - B.vz;
+  var relDist = Math.sqrt(rvx * rvx + rvz * rvz) * dt;
+  var steps = Math.max(1, Math.min(8, Math.ceil(relDist / 0.5)));
+  var hit = null, hitT = 0;
+  var A0 = { x: A.x, z: A.z }, B0 = { x: B.x, z: B.z };
+  for (var s = 1; s <= steps; s++){
+    var t = s / steps;
+    var aT = tfMakeBody(A0.x + A.vx * dt * t, A0.z + A.vz * dt * t, A.hx, A.hz, A.hl, A.hw, 0, 0);
+    var bT = tfMakeBody(B0.x + B.vx * dt * t, B0.z + B.vz * dt * t, B.hx, B.hz, B.hl, B.hw, 0, 0);
+    var r = tfSat(aT, bT);
+    if (r){ hit = r; hitT = t; break; }
+  }
+  if (!hit) return null;
+  var invSum = A.invM + B.invM;
+  if (invSum <= 0) return null;
+  var nx = hit.nx, nz = hit.nz, pen = hit.pen;
+  /* contact configuration */
+  var aCx = A0.x + A.vx * dt * hitT, aCz = A0.z + A.vz * dt * hitT;
+  var bCx = B0.x + B.vx * dt * hitT, bCz = B0.z + B.vz * dt * hitT;
+  /* positional push-out, split by inverse mass (+1 cm slop) */
+  var corr = pen + 0.01;
+  var aPx = aCx + nx * corr * (A.invM / invSum), aPz = aCz + nz * corr * (A.invM / invSum);
+  var bPx = bCx - nx * corr * (B.invM / invSum), bPz = bCz - nz * corr * (B.invM / invSum);
+  /* impulse along the normal (closing only) */
+  var vn = rvx * nx + rvz * nz;
+  var closing = vn < 0 ? -vn : 0;
+  var aV = { x: A.vx, z: A.vz }, bV = { x: B.vx, z: B.vz };
+  if (vn < 0){
+    var j = -(1 + TF_RESTITUTION) * vn / invSum;
+    aV.x += j * A.invM * nx; aV.z += j * A.invM * nz;
+    bV.x -= j * B.invM * nx; bV.z -= j * B.invM * nz;
+    /* tangential scrub: bleed a slice of the relative slide so a
+       sideswipe doesn't skate forever (friction-like, mass-split) */
+    var tx = -nz, tz = nx;
+    var vt = rvx * tx + rvz * tz;
+    var jt = -vt * 0.22 / invSum;
+    aV.x += jt * A.invM * tx; aV.z += jt * A.invM * tz;
+    bV.x -= jt * B.invM * tx; bV.z -= jt * B.invM * tz;
+  }
+  /* re-integrate the remainder of the frame with new velocities */
+  var rem = dt * (1 - hitT);
+  var aFx = aPx + aV.x * rem, aFz = aPz + aV.z * rem;
+  var bFx = bPx + bV.x * rem, bFz = bPz + bV.z * rem;
+  /* proof value: overlap at the resolved end state (re-test) */
+  var endA = tfMakeBody(aFx, aFz, A.hx, A.hz, A.hl, A.hw, 0, 0);
+  var endB = tfMakeBody(bFx, bFz, B.hx, B.hz, B.hl, B.hw, 0, 0);
+  var endSat = tfSat(endA, endB);
+  /* deltas are END-OF-FRAME targets relative to the bodies' natural
+     (unresolved) end-of-frame positions, so a caller holding
+     post-move state applies exactly these */
+  var aNx = A.x + A.vx * dt, aNz = A.z + A.vz * dt;
+  var bNx = B.x + B.vx * dt, bNz = B.z + B.vz * dt;
+  return { pen: pen, nx: nx, nz: nz, closing: closing, steps: steps,
+           aDx: aFx - aNx, aDz: aFz - aNz, aDvx: aV.x - A.vx, aDvz: aV.z - A.vz,
+           bDx: bFx - bNx, bDz: bFz - bNz, bDvx: bV.x - B.vx, bDvz: bV.z - B.vz,
+           maxOverlapAfter: endSat ? endSat.pen : 0 };
+}
+function tfDamageFor(closing){
+  if (closing <= TF_DMG_MIN_CLOSING) return 0;
+  return Math.min(TF_DMG_CAP, (closing - TF_DMG_MIN_CLOSING) * 1.6);
+}
+/* collision probes over the pure cores: the harness and the in-page
+   regression share this exact battery. */
+function tfCollisionProbes(){
+  var checks = [], stats = {};
+  function ck(name, cond){ checks.push({ name: name, pass: !!cond }); }
+  function player(x, z, h, v){ var hx = Math.sin(h), hz = Math.cos(h); return tfMakeBody(x, z, hx, hz, 4.4, 1.35, hx * v, hz * v, 1 / 36000); }
+  function car(x, z, h, v, arch){ var hx = Math.sin(h), hz = Math.cos(h); return tfMakeBody(x, z, hx, hz, 2.25, 0.9, hx * v, hz * v, 1 / (TF_MASS[arch || 'car'])); }
+  function shiftOf(r){ return Math.sqrt(r.aDx * r.aDx + r.aDz * r.aDz); }   /* correction vs the natural end-of-frame position */
+  var dt = 1 / 30;
+  /* head-on at max closing: player EB 31 m/s, car WB 27.5 m/s.
+     Centres 7.2 m apart at frame start (bumpers ~0.55 m clear):
+     contact lands within the frame at highway closing speed. */
+  var r1 = tfResolvePair(player(0, 12.3, Math.PI / 2, 31), car(7.2, 12.3, -Math.PI / 2, 27.5), dt);
+  ck('head-on: contact found', !!r1);
+  if (r1){
+    stats.headOn = { closing: +r1.closing.toFixed(2), pen: +r1.pen.toFixed(3), maxOverlapAfter: r1.maxOverlapAfter, steps: r1.steps };
+    ck('head-on: closing ~= 58.5 m/s', Math.abs(r1.closing - 58.5) < 0.6);
+    ck('head-on: no residual overlap', r1.maxOverlapAfter <= 0.011);
+    ck('head-on: car takes the big velocity change', Math.abs(r1.bDvx) > Math.abs(r1.aDvx) * 5);
+    ck('head-on: player barely deflected (< 3 m/s)', Math.abs(r1.aDvx) < 3);
+  }
+  /* rear-end: player 25 m/s into a 20 m/s car, same lane, bumpers
+     0.35 m apart at frame start; a 5 m/s closing needs ~4 frames to
+     arrive, so sweep a 4-frame horizon (dt 0.12) */
+  var r2 = tfResolvePair(player(0, 12.3, Math.PI / 2, 25), car(7, 12.3, Math.PI / 2, 20), 0.12);
+  ck('rear-end: contact found', !!r2);
+  if (r2){
+    stats.rearEnd = { closing: +r2.closing.toFixed(2), maxOverlapAfter: r2.maxOverlapAfter };
+    ck('rear-end: no residual overlap', r2.maxOverlapAfter <= 0.011);
+    ck('rear-end: closing ~= 5 m/s', Math.abs(r2.closing - 5) < 0.6);
+    ck('rear-end: damage in shipped band (0 < d <= 8)', tfDamageFor(r2.closing) > 0 && tfDamageFor(r2.closing) <= 8);
+  }
+  /* sideswipe: parallel pass already overlapping laterally at frame
+     start (the persistent-contact case), small closing */
+  var r3 = tfResolvePair(player(0, 12.3, Math.PI / 2, 24), car(1.5, 10.35, Math.PI / 2, 22), dt);
+  ck('sideswipe: contact found', !!r3);
+  if (r3){
+    stats.sideswipe = { closing: +r3.closing.toFixed(2), maxOverlapAfter: r3.maxOverlapAfter };
+    ck('sideswipe: separated after resolve', r3.maxOverlapAfter <= 0.011);
+  }
+  /* blocked lane: player parked in the lane (v=0), car at 8 m/s,
+     bumpers 0.35 m apart at frame start (contact inside this frame) */
+  var r4 = tfResolvePair(player(0, 12.3, Math.PI / 2, 0), car(-6.85, 12.3, Math.PI / 2, 8), dt);
+  ck('blocked lane: contact found', !!r4);
+  if (r4){
+    stats.blocked = { carDv: +r4.bDvx.toFixed(2), playerShift: +shiftOf(r4).toFixed(3), maxOverlapAfter: r4.maxOverlapAfter };
+    ck('blocked lane: car stopped or bounced (dv <= -6)', r4.bDvx <= -6);
+    ck('blocked lane: player positional correction < 0.35 m (not shoved)', shiftOf(r4) < 0.35);
+    ck('blocked lane: no residual overlap', r4.maxOverlapAfter <= 0.011);
+  }
+  /* tunnelling: max closing, long frame (dt 0.05), centres 3.4 m
+     apart at frame start (already interpenetrating path) */
+  var r5 = tfResolvePair(player(0, 12.3, Math.PI / 2, 31), car(3.4, 12.3, -Math.PI / 2, 27.5), 0.05);
+  ck('tunnelling: contact still found at dt=0.05 max closing', !!r5);
+  if (r5){ stats.tunnel = { steps: r5.steps, maxOverlapAfter: r5.maxOverlapAfter }; ck('tunnelling: no residual overlap', r5.maxOverlapAfter <= 0.011); }
+  /* gentle nudge: 1 m/s closing = no damage */
+  ck('nudge: 1 m/s closing deals no damage', tfDamageFor(1.0) === 0);
+  ck('damage cap: 60 m/s closing capped at ' + TF_DMG_CAP, tfDamageFor(60) === TF_DMG_CAP);
+  var okAll = checks.every(function(c){ return c.pass; });
+  return { ok: okAll, checks: checks, stats: stats };
+}
+/* ================= TRAFIX-CORE-END ================= */
+
+var stats = { contacts: 0, hits: 0, nudges: 0, maxOverlapAfter: 0, lastClosing: 0, frames: 0 };
+
+/* ================= FIX 1: distCarTick wrap ================= */
+var origDistCarTick = (typeof distCarTick === 'function') ? distCarTick : null;
+var TF_LOOP_STATE = [];
+function tfLoopIndex(loop){
+  /* per-loop drive-side state. District rectangles are shared by
+     both travel directions; tfLoopSide (in the core) grades the
+     offset sign per loop against the per-leg right-offset invariant
+     — the plain right offset (+1) wins on every shipped loop, and
+     the grade stays as a guard if the convention ever changes.
+     A corner set that collapses under the chosen side falls back
+     to plain centred targets — never worse than the shipped
+     centreline. Computed once per loop identity. */
+  var i;
+  for (i = 0; i < TF_LOOP_STATE.length; i++) if (TF_LOOP_STATE[i].loop === loop) return TF_LOOP_STATE[i];
+  var n = loop.length;
+  var loopT = tfLoopSide(loop);
+  /* corner-collapse gate: with loopT applied, consecutive corner
+     targets must still advance strictly in the leg's direction (a
+     collapsed or crossed corner would trap a car) */
+  var st = { loop: loop, loopT: loopT, bad: false };
+  var tg = [];
+  for (i = 0; i < n; i++){
+    var pv = loop[(i + n - 1) % n], wq = loop[i], nx2 = loop[(i + 1) % n];
+    var tt = tfOffsetTarget(pv, wq, nx2);
+    tg.push({ x: wq[0] + (tt.x - wq[0]) * loopT, z: wq[1] + (tt.z - wq[1]) * loopT });
+  }
+  for (i = 0; i < n; i++){
+    var A2 = loop[i], B2 = tg[i], C2 = loop[(i + 1) % n], D2 = tg[(i + 1) % n];
+    var lx = C2[0] - A2[0], lz = C2[1] - A2[1];
+    var adv = (D2.x - B2.x) * lx + (D2.z - B2.z) * lz;
+    if (!(adv > 0)) st.bad = true;
+  }
+  TF_LOOP_STATE.push(st);
+  return st;
+}
+function wrapDistCarTick(dt){
+  if (!ON || !origDistCarTick || typeof DIST_CARS === 'undefined' || !DIST_CARS){
+    if (origDistCarTick) origDistCarTick(dt);
+    return;
+  }
+  /* player blocking circles (tractor centre + trailer rear) for the
+     new district-car braking; computed once per tick */
+  var blockers = null;
+  try {
+    if (typeof S !== 'undefined' && S && S.started){
+      blockers = [{ x: S.x, z: S.z, r: 3.6 }];
+      if (typeof trailer !== 'undefined' && trailer && trailer.position){
+        var tfx = Math.sin(S.tHeading), tfz = Math.cos(S.tHeading);
+        blockers.push({ x: trailer.position.x - tfx * 8.5, z: trailer.position.z - tfz * 8.5, r: 3.6 });
+      }
+    }
+  } catch (e) { blockers = null; }
+  for (var i = 0; i < DIST_CARS.length; i++){
+    var c = DIST_CARS[i];
+    var wp = c.loop[c.wp];
+    var prev = c.loop[(c.wp + c.loop.length - 1) % c.loop.length];
+    var nxt = c.loop[(c.wp + 1) % c.loop.length];
+    var lst = tfLoopIndex(c.loop);
+    var tgt = tfOffsetTarget(prev, wp, nxt);
+    if (lst.loopT !== 1 && !lst.bad) tgt = { x: wp[0] + (tgt.x - wp[0]) * lst.loopT, z: wp[1] + (tgt.z - wp[1]) * lst.loopT, hx: tgt.hx, hz: tgt.hz };
+    else if (lst.bad) tgt = { x: wp[0], z: wp[1], hx: tgt.hx, hz: tgt.hz };
+    var dx = tgt.x - c.g.position.x, dz = tgt.z - c.g.position.z;
+    var dist = Math.sqrt(dx * dx + dz * dz);
+    if (dist < 3){ c.wp = (c.wp + 1) % c.loop.length; continue; }
+    var ux = dx / dist, uz = dz / dist;
+    var axis = Math.abs(ux) >= Math.abs(uz) ? 'EW' : 'NS';
+    var want = c.cruise;
+    if (typeof DIST_LIGHTS !== 'undefined' && typeof lightState === 'function'){
+      for (var li = 0; li < DIST_LIGHTS.length; li++){
+        var L = DIST_LIGHTS[li];
+        var lx = L.x - c.g.position.x, lz = L.z - c.g.position.z;
+        var ahead = lx * ux + lz * uz, side = Math.abs(lx * uz - lz * ux);
+        if (ahead > 2 && ahead < 14 && side < 5 && lightState(axis, L.off) !== 'green'){ want = 0; break; }
+      }
+    }
+    if (want > 0 && blockers){
+      for (var bi = 0; bi < blockers.length; bi++){
+        var bx = blockers[bi].x - c.g.position.x, bz = blockers[bi].z - c.g.position.z;
+        var bAhead = bx * ux + bz * uz, bSide = Math.abs(bx * uz - bz * ux);
+        if (bAhead > 0 && bSide < blockers[bi].r + 0.9){
+          var stopDist = bAhead - 5.5;
+          var w2 = stopDist <= 0.3 ? 0 : c.cruise * Math.max(0, stopDist / 14);
+          if (w2 < want) want = w2;
+        }
+      }
+    }
+    c.speed += Math.max(-7 * dt, Math.min(2.2 * dt, want - c.speed));
+    if (c.speed < 0) c.speed = 0;
+    c.g.position.x += ux * c.speed * dt;
+    c.g.position.z += uz * c.speed * dt;
+    c.g.rotation.y = Math.atan2(ux, uz);
+  }
+}
+if (origDistCarTick) distCarTick = wrapDistCarTick;
+
+/* ================= FIX 2: collision pass ================= */
+function pBodies(dt){
+  /* bodies are snapshotted at FRAME START (current post-move state
+     minus this frame's velocity step); tfResolvePair sweeps them
+     forward and returns deltas against the natural end-of-frame
+     positions, which is exactly the state the game is holding */
+  var out = [];
+  if (typeof S === 'undefined' || !S || !S.started) return out;
+  var hx = Math.sin(S.heading), hz = Math.cos(S.heading);
+  var loadKg = 20000 + ((S.load && S.load.weight) || 0);
+  var invM = 1 / Math.max(18000, Math.min(44000, loadKg + 16000));
+  out.push({ body: tfMakeBody(S.x - hx * S.v * dt, S.z - hz * S.v * dt, hx, hz, 4.4, 1.35, hx * S.v, hz * S.v, invM), kind: 'tractor' });
+  try {
+    if (typeof trailer !== 'undefined' && trailer && trailer.position){
+      var th = S.tHeading + (S.sway || 0);
+      var tx = Math.sin(th), tz = Math.cos(th);
+      var cx = trailer.position.x - tx * 8.2 - hx * S.v * dt, cz = trailer.position.z - tz * 8.2 - hz * S.v * dt;
+      out.push({ body: tfMakeBody(cx, cz, tx, tz, 8.2, 1.3, hx * S.v, hz * S.v, invM), kind: 'trailer' });
+    }
+  } catch (e) {}
+  return out;
+}
+function applyPlayerDelta(r){
+  var fx = Math.sin(S.heading), fz = Math.cos(S.heading);
+  S.x += r.aDx; S.z += r.aDz;
+  S.v += r.aDvx * fx + r.aDvz * fz;
+}
+function reportImpact(closing){
+  var amt = tfDamageFor(closing);
+  stats.lastClosing = closing;
+  if (amt <= 0){ stats.nudges++; return; }
+  stats.hits++;
+  S.damage = Math.min(100, S.damage + amt);
+  if (typeof bumpCondition === 'function') bumpCondition('impact', amt);
+  S.scrapeCd = Math.max(S.scrapeCd || 0, 0.9);
+  if (typeof toast === 'function') toast('Traffic! Freight and fenders both lose.', 3);
+  if (typeof beep === 'function'){ beep(392, 0.18, 0, 0.1); beep(392, 0.18, 0.22, 0.1); }
+}
+var scratchPairs = [];
+function collidePass(dt){
+  if (!ON) return;
+  if (typeof S === 'undefined' || !S || !S.started) return;
+  if (typeof paused !== 'undefined' && paused) return;
+  var P = pBodies(dt);
+  if (!P.length) return;
+  stats.frames++;
+  var i, j;
+  /* gather candidate traffic bodies near the player (broadphase) */
+  scratchPairs.length = 0;
+  function consider(B, apply){
+    for (var pi = 0; pi < P.length; pi++){
+      var pb = P[pi].body;
+      var ddx = B.x - pb.x, ddz = B.z - pb.z;
+      var rr = 26 + (Math.abs(pb.vx - B.vx) + Math.abs(pb.vz - B.vz)) * dt;
+      if (ddx * ddx + ddz * ddz > rr * rr) continue;
+      var r = tfResolvePair(pb, B, dt);
+      if (r) scratchPairs.push({ r: r, pb: P[pi], apply: apply });
+    }
+  }
+  try {
+    if (typeof traffic !== 'undefined' && traffic){
+      for (i = 0; i < traffic.length; i++){
+        var c = traffic[i];
+        if (c.activeD === false || c.waitSpawn > 0 || !c.g) continue;
+        (function(c){
+          var ry = c.g.rotation.y;
+          var hx = Math.sin(ry), hz = Math.cos(ry);
+          var B = tfMakeBody(c.g.position.x - hx * c.cur * dt, c.g.position.z - hz * c.cur * dt, hx, hz, (c.len || 4.5) / 2, ((c.A && c.A.wid) || 1.8) / 2,
+                             hx * c.cur, hz * c.cur, 1 / (TF_MASS[c.arch] || 1500));
+          consider(B, function(r){
+            c.g.position.x += r.bDx; c.g.position.z += r.bDz;
+            var f = Math.sin(c.g.rotation.y), fz2 = Math.cos(c.g.rotation.y);
+            c.cur = tfClamp(c.cur + (r.bDvx * f + r.bDvz * fz2), 0, (c.A && c.A.top) || 27.5);
+          });
+        })(c);
+      }
+    }
+    if (typeof aiRigs !== 'undefined' && aiRigs){
+      for (i = 0; i < aiRigs.length; i++){
+        var ai = aiRigs[i];
+        if (ai.activeD === false) continue;
+        (function(ai){
+          var hx = Math.sin(ai.h), hz = Math.cos(ai.h);
+          var inv = 1 / TF_MASS.rig;
+          var BT = tfMakeBody(ai.x - hx * ai.v * dt, ai.z - hz * ai.v * dt, hx, hz, 4.4, 1.35, hx * ai.v, hz * ai.v, inv);
+          consider(BT, function(r){
+            ai.x += r.bDx; ai.z += r.bDz;
+            ai.v = tfClamp(ai.v + (r.bDvx * hx + r.bDvz * hz), 0, 30);
+            if (ai.tractor) { ai.tractor.position.x += r.bDx; ai.tractor.position.z += r.bDz; }
+            if (ai.trailer) { ai.trailer.position.x += r.bDx; ai.trailer.position.z += r.bDz; }
+          });
+          var tx = Math.sin(ai.th), tz = Math.cos(ai.th);
+          var tcx = ai.x - hx * 1.55 - tx * 8.2 - hx * ai.v * dt, tcz = ai.z - hz * 1.55 - tz * 8.2 - hz * ai.v * dt;
+          /* trailer centre: hitch sits 1.55 behind the tractor centre
+             along the TRACTOR heading; the box extends along its own */
+          var BL = tfMakeBody(tcx, tcz, tx, tz, 8.2, 1.3, hx * ai.v, hz * ai.v, inv);
+          consider(BL, function(r){
+            ai.x += r.bDx; ai.z += r.bDz;
+            ai.v = tfClamp(ai.v + (r.bDvx * hx + r.bDvz * hz), 0, 30);
+            if (ai.tractor) { ai.tractor.position.x += r.bDx; ai.tractor.position.z += r.bDz; }
+            if (ai.trailer) { ai.trailer.position.x += r.bDx; ai.trailer.position.z += r.bDz; }
+          });
+        })(ai);
+      }
+    }
+    if (typeof DIST_CARS !== 'undefined' && DIST_CARS){
+      for (i = 0; i < DIST_CARS.length; i++){
+        var e = DIST_CARS[i];
+        if (!e.g) continue;
+        (function(e){
+          var ry = e.g.rotation.y;
+          var hx = Math.sin(ry), hz = Math.cos(ry);
+          var B = tfMakeBody(e.g.position.x - hx * (e.speed || 0) * dt, e.g.position.z - hz * (e.speed || 0) * dt, hx, hz, 2.85, 1.0, hx * (e.speed || 0), hz * (e.speed || 0), 1 / TF_MASS.car);
+          consider(B, function(r){
+            e.g.position.x += r.bDx; e.g.position.z += r.bDz;
+            var f = Math.sin(e.g.rotation.y), fz2 = Math.cos(e.g.rotation.y);
+            e.speed = Math.max(0, (e.speed || 0) + (r.bDvx * f + r.bDvz * fz2));
+          });
+        })(e);
+      }
+    }
+  } catch (err) { /* fail-silent: a pass error must never break the frame */ }
+  /* apply: strongest contact per player body wins the player delta;
+     every traffic body keeps its own resolution */
+  var usedP = {};
+  for (j = 0; j < scratchPairs.length; j++){
+    var pr = scratchPairs[j];
+    stats.contacts++;
+    if (pr.r.maxOverlapAfter > stats.maxOverlapAfter) stats.maxOverlapAfter = pr.r.maxOverlapAfter;
+    pr.apply(pr.r);
+    var key = pr.pb.kind;
+    if (!usedP[key] || pr.r.closing > usedP[key].r.closing) usedP[key] = pr;
+  }
+  var bestClosing = 0;
+  for (var k in usedP){
+    applyPlayerDelta(usedP[k].r);
+    if (usedP[k].r.closing > bestClosing) bestClosing = usedP[k].r.closing;
+  }
+  if (bestClosing > 0 && (S.scrapeCd || 0) <= 0) reportImpact(bestClosing);
+  else if (bestClosing > TF_DMG_MIN_CLOSING) stats.lastClosing = bestClosing;
+}
+var lastNow = 0;
+function tfFrame(now){
+  requestAnimationFrame(tfFrame);
+  try {
+    if (!ON) return;
+    var dt = lastNow ? Math.min(0.05, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
+    lastNow = now;
+    collidePass(dt);
+  } catch (e) {}
+}
+if (typeof requestAnimationFrame === 'function') requestAnimationFrame(tfFrame);
+
+/* ================= regression surface ================= */
+function regression(){
+  var checks = {}, st = {};
+  try {
+    checks.flagOn = ON;
+    checks.flagMatchesStorage = flagOn() === ON;
+    checks.modulePresent = !!(window.K401 && window.K401.trafix);
+    checks.wrapInstalled = !origDistCarTick || distCarTick === wrapDistCarTick;
+    checks.saveKeysUntouched = (typeof SAVE_KEYS !== 'undefined') &&
+      SAVE_KEYS.join(',') === 'kot401.career,kot401.wallet,kot401.hos,kot401.truck,kot401.safety,kot401.controls,kot401.weather,kot401.livery,kot401.muted,kot401.p5';
+    checks.flagKeyNotInSaveKeys = (typeof SAVE_KEYS === 'undefined') || SAVE_KEYS.indexOf(FLAG_KEY) < 0;
+    var probes = tfCollisionProbes();
+    checks.collisionProbes = probes.ok;
+    st.probes = probes.stats;
+    var mainline = [];
+    if (typeof loLaneZ === 'function'){
+      [1, -1].forEach(function(dir){ mainline.push({ dir: dir, fastZ: loLaneZ(dir, true), slowZ: loLaneZ(dir, false) }); });
+    }
+    var loops = [];
+    if (typeof DIST_CARS !== 'undefined' && DIST_CARS){
+      var seen = {};
+      DIST_CARS.forEach(function(e){
+        var key = JSON.stringify(e.loop);
+        if (!seen[key]){ seen[key] = true; loops.push({ name: 'loop@' + e.loop[0][0] + ',' + e.loop[0][1], pts: e.loop }); }
+      });
+    }
+    var la = tfLaneAssertions({ mainline: mainline, loops: loops });
+    checks.laneAssertions = la.ok;
+    st.lane = la.stats;
+    checks.statsLive = typeof stats.contacts === 'number';
+  } catch (e) { checks.exception = String(e && e.message || e); }
+  var ok = Object.keys(checks).every(function(k){ return k === 'flagOn' || checks[k] === true; });
+  return { ok: ok, checks: checks, on: ON, stats: st };
+}
+window.K401 = window.K401 || {};
+window.K401.trafix = {
+  on: ON,
+  flagKey: FLAG_KEY,
+  laneOffsetFor: tfOffsetTarget,
+  loopSide: tfLoopSide,
+  rightOf: tfRightOf,
+  resolvePair: tfResolvePair,
+  damageFor: tfDamageFor,
+  laneAssertions: tfLaneAssertions,
+  collisionProbes: tfCollisionProbes,
+  stats: function(){ return stats; },
+  regression: regression
+};
+})();
+</script>
 </body>
 </html>
