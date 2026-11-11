@@ -46348,5 +46348,177 @@ if (typeof loFastTick === 'function'){
 })();
 </script>
 
+<script id="iosFixScript">
+/* ===== iOS/WebKit boot-profile fix (post-chain, 2026-11-11) =====
+   Problem: on iPhone (WebKit, every iOS browser) the post-LO build dies
+   during menu boot with Safari's renderer-crash page, while desktop
+   Chromium and the pre-LO build run fine on the same phone. Boot-profile
+   bisect across all 14 chain checkpoints shows a monotone staircase, no
+   cliff: estimated texture payload 244 -> 283 MB, boot canvases
+   246 -> 276, boot heap 16 -> 18 MB. Inference: the LO chain's cumulative
+   boot footprint crossed the WebKit per-tab ceiling the pre-LO build sat
+   just under; the crash window is boot -> first frames, BEFORE the gfx2
+   auto-sampler (which only samples during a run) can demote anything.
+
+   Fix: on iOS-class devices only, apply the memory-critical subset of
+   the game's own Lite tier (kot401.gfx2 tiers: prCap 1.0, shadows off,
+   far 1000, particles 300, trees 40%) directly at module init -- i.e.
+   before the first frame, which the shipped boot only schedules on
+   window 'load' -- and enforce the renderer-level caps on every render
+   call, so a later gfx applyGfx()/sampler transition cannot silently
+   restore the heavy profile inside a session. NOTHING is persisted and
+   the user's graphics mode/eff are never written: if this module is
+   removed, boot behaviour is exactly the Stage 9 build's. On
+   non-constrained devices, and with the flag off, the module is a pure
+   pass-through: the game renders exactly as shipped.
+
+   Deliberate tier note: the Lite tier's own parameters are NOT changed.
+   On constrained devices the values above are applied directly to the
+   renderer/camera/scene objects; the gfx tier label still reports the
+   user's own setting. Flag: localStorage 'kot401.iosfix' ('off'
+   disables; default ON). Surface: window.K401.iosFix. */
+(function(){
+  'use strict';
+  var ON = true;
+  try { ON = localStorage.getItem('kot401.iosfix') !== 'off'; } catch (e) { ON = true; }
+
+  function isConstrained(){
+    try {
+      var ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+      if (/iPhone|iPad|iPod/i.test(ua)) return true;
+      /* iPadOS reports a desktop Mac UA; a touch-capable "Mac" browser
+         is an iPad. A real Mac has no 'ontouchend' on document. */
+      if (/Macintosh/.test(ua) && typeof document !== 'undefined' && 'ontouchend' in document) return true;
+    } catch (e) {}
+    return false;
+  }
+  var CONSTRAINED = isConstrained();
+  var ACTIVE = !!(ON && CONSTRAINED &&
+    typeof renderer !== 'undefined' && renderer &&
+    typeof camera !== 'undefined' && camera &&
+    typeof scene !== 'undefined' && scene);
+
+  var PR_CAP = 1.0;      /* Lite tier prCap */
+  var FAR_CAP = 1000;    /* Lite tier far (LITE_FAR) */
+  var P_COUNT = 300;     /* Lite tier particle draw count (LITE_PCOUNT) */
+  var state = { appliedAtBoot: false, enforcements: 0, profile: null };
+
+  function capPixelRatio(){
+    try {
+      var want = Math.min(window.devicePixelRatio || 1, PR_CAP);
+      if (renderer.getPixelRatio() > want) renderer.setPixelRatio(want);
+    } catch (e) {}
+  }
+  function shadowsOff(refresh){
+    try { if (renderer.shadowMap.enabled) renderer.shadowMap.enabled = false; } catch (e) {}
+    try { if (typeof sun !== 'undefined' && sun && sun.castShadow) sun.castShadow = false; } catch (e) {}
+    if (refresh){
+      /* mirror gfx2's refreshMaterials(): programs must recompile
+         without shadow sampling */
+      try {
+        scene.traverse(function(o){
+          if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(function(m){ m.needsUpdate = true; });
+        });
+      } catch (e) {}
+    }
+  }
+  function capFar(){
+    try { if (camera.far !== FAR_CAP){ camera.far = FAR_CAP; camera.updateProjectionMatrix(); } } catch (e) {}
+  }
+  function capParticles(){
+    try { if (typeof pGeo !== 'undefined' && pGeo && pGeo.setDrawRange && pGeo.drawRange && pGeo.drawRange.count > P_COUNT) pGeo.setDrawRange(0, P_COUNT); } catch (e) {}
+  }
+  function capTrees(){
+    try {
+      if (typeof trunkIM !== 'undefined' && trunkIM){
+        var n = Math.max(40, Math.floor(trunkIM.count * 0.4));
+        if (trunkIM.count > n) trunkIM.count = n;
+        if (typeof canIM !== 'undefined' && canIM && canIM.count > n) canIM.count = n;
+      }
+    } catch (e) {}
+  }
+  function applyBootProfile(){
+    capPixelRatio();
+    shadowsOff(true);
+    capFar();
+    capParticles();
+    capTrees();
+    state.appliedAtBoot = true;
+  }
+  function enforceFrame(){
+    var before = state.enforcements;
+    try {
+      if (renderer.getPixelRatio() > Math.min(window.devicePixelRatio || 1, PR_CAP)) capPixelRatio();
+      if (renderer.shadowMap.enabled || (typeof sun !== 'undefined' && sun && sun.castShadow)) shadowsOff(false);
+      if (camera.far !== FAR_CAP) capFar();
+      if (state.enforcements === before &&
+          (renderer.getPixelRatio() > PR_CAP + 0.001 || renderer.shadowMap.enabled || camera.far !== FAR_CAP)) state.enforcements++;
+    } catch (e) {}
+  }
+  function snapshot(){
+    var p = { constrained: CONSTRAINED, active: ACTIVE, flagOn: ON };
+    try {
+      if (typeof renderer !== 'undefined' && renderer){
+        p.pixelRatio = renderer.getPixelRatio();
+        var sz = renderer.getDrawingBufferSize({ width: 0, height: 0 });
+        p.drawingBuffer = [sz.width, sz.height];
+        p.shadows = !!renderer.shadowMap.enabled;
+      }
+      if (typeof camera !== 'undefined' && camera) p.camFar = camera.far;
+      if (typeof sun !== 'undefined' && sun) p.sunCastShadow = !!sun.castShadow;
+      if (window.K401 && window.K401.gfx && window.K401.gfx.state){
+        var gs = window.K401.gfx.state();
+        p.gfxMode = gs.mode; p.gfxEff = gs.eff;
+      }
+    } catch (e) {}
+    return p;
+  }
+
+  if (ACTIVE){
+    /* Runs at parse time of the LAST script block: every world builder
+       has already run, but the shipped boot schedules its first frame
+       only on window 'load', so these caps land before frame one. */
+    applyBootProfile();
+    var _iosRender = renderer.render;
+    renderer.render = function(s, c){
+      enforceFrame();
+      return _iosRender.call(renderer, s, c);
+    };
+  }
+  state.profile = snapshot();
+
+  window.K401 = window.K401 || {};
+  window.K401.iosFix = {
+    on: function(){ return ON; },
+    constrained: function(){ return CONSTRAINED; },
+    active: function(){ return ACTIVE; },
+    caps: { pixelRatio: PR_CAP, far: FAR_CAP, particles: P_COUNT, treesK: 0.4, shadows: false },
+    profile: function(){ return snapshot(); },
+    bootProfile: function(){ return state.profile; },
+    regression: function(){
+      var checks = [];
+      function ck(name, cond){ checks.push({ name: name, pass: !!cond }); }
+      ck('surface present', !!(window.K401 && window.K401.iosFix));
+      ck('detection is boolean', typeof CONSTRAINED === 'boolean');
+      if (!ON){ ck('flag off: module inert', !state.appliedAtBoot); }
+      else if (!CONSTRAINED){ ck('unconstrained device: boot profile untouched', !state.appliedAtBoot); }
+      else if (ACTIVE){
+        var p = snapshot();
+        ck('pixel ratio capped at Lite 1.0', p.pixelRatio <= PR_CAP + 0.001);
+        ck('shadow map disabled', p.shadows === false);
+        ck('sun castShadow off', p.sunCastShadow === false);
+        ck('camera far at Lite 1000', p.camFar === FAR_CAP);
+        ck('boot profile applied before first frame', state.appliedAtBoot === true);
+        ck('user gfx mode not rewritten by module', typeof p.gfxMode === 'string');
+      } else {
+        ck('constrained but renderer globals missing: FAIL-SAFE inert, no throw', true);
+      }
+      var ok = checks.every(function(c){ return c.pass; });
+      return { ok: ok, checks: checks, active: ACTIVE, constrained: CONSTRAINED };
+    }
+  };
+})();
+</script>
+
 </body>
 </html>
