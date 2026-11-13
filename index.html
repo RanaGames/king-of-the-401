@@ -41553,9 +41553,12 @@ function cityDestNodeFor(x, z){
 /* ---------------- pure: city car step -----------------------------
    Car: { path:[nodeIds], ni (index of target node), d (units along
    current edge from path[ni-1]), speed, cruise, parkT, arrived }.
-   Position rides the RIGHT side: right vector (hz, −hx) — eastbound
-   travel rides the −z (south) side, matching the corridor's RHT
-   convention. ctx: { dt, aiK, stopAt } where stopAt is the distance
+   Position rides the RIGHT side: right vector (−hz, hx) — the
+   shipped camera code names (fz, −fx) its right vector, so
+   eastbound travel rides the +z side, matching the corridor's
+   RHT convention. (Offset sign corrected 2026-11-13: the old
+   (hz, −hx) vector was LEFT of travel, a pre-RHT leftover.)
+   ctx: { dt, aiK, stopAt } where stopAt is the distance
    ahead (units along travel) at which the car's front must be
    stopped (Infinity = clear). Edge transitions are internal. */
 var C_LANE_OFF = 2.2, C_STREET_HALF = 5.5;
@@ -41564,7 +41567,7 @@ function cityCarPos(car){
   var A = C_NODES[from], B = C_NODES[to];
   var dx = B.x - A.x, dz = B.z - A.z, len = Math.sqrt(dx * dx + dz * dz) || 1;
   var hx = dx / len, hz = dz / len, f = car.d / len;
-  return { x: A.x + dx * f + hz * C_LANE_OFF, z: A.z + dz * f - hx * C_LANE_OFF,
+  return { x: A.x + dx * f - hz * C_LANE_OFF, z: A.z + dz * f + hx * C_LANE_OFF,
            heading: Math.atan2(hx, hz), len: len, hx: hx, hz: hz };
 }
 function cityCarStep(car, ctx){
@@ -42126,7 +42129,7 @@ function bCarPos(car){
   var A = B_NODES[from], B = B_NODES[to];
   var dx = B.x - A.x, dz = B.z - A.z, len = Math.sqrt(dx * dx + dz * dz) || 1;
   var hx = dx / len, hz = dz / len, f = car.d / len;
-  return { x: A.x + dx * f + hz * C_LANE_OFF, z: A.z + dz * f - hx * C_LANE_OFF,
+  return { x: A.x + dx * f - hz * C_LANE_OFF, z: A.z + dz * f + hx * C_LANE_OFF,
            heading: Math.atan2(hx, hz), len: len, hx: hx, hz: hz };
 }
 function bCarStep(car, ctx){
@@ -43047,7 +43050,7 @@ function vCarPos(car){
   var A = V_NODES[from], B = V_NODES[to];
   var dx = B.x - A.x, dz = B.z - A.z, len = Math.sqrt(dx * dx + dz * dz) || 1;
   var hx = dx / len, hz = dz / len, f = car.d / len;
-  return { x: A.x + dx * f + hz * C_LANE_OFF, z: A.z + dz * f - hx * C_LANE_OFF,
+  return { x: A.x + dx * f - hz * C_LANE_OFF, z: A.z + dz * f + hx * C_LANE_OFF,
            heading: Math.atan2(hx, hz), len: len, hx: hx, hz: hz };
 }
 function vCarStep(car, ctx){
@@ -43597,7 +43600,7 @@ function wCarPos(car){
   var A = W_NODES[from], B = W_NODES[to];
   var dx = B.x - A.x, dz = B.z - A.z, len = Math.sqrt(dx * dx + dz * dz) || 1;
   var hx = dx / len, hz = dz / len, f = car.d / len;
-  return { x: A.x + dx * f + hz * C_LANE_OFF, z: A.z + dz * f - hx * C_LANE_OFF,
+  return { x: A.x + dx * f - hz * C_LANE_OFF, z: A.z + dz * f + hx * C_LANE_OFF,
            heading: Math.atan2(hx, hz), len: len, hx: hx, hz: hz };
 }
 function wCarStep(car, ctx){
@@ -44161,7 +44164,7 @@ function hCarPos(car){
   var A = H_NODES[from], B = H_NODES[to];
   var dx = B.x - A.x, dz = B.z - A.z, len = Math.sqrt(dx * dx + dz * dz) || 1;
   var hx = dx / len, hz = dz / len, f = car.d / len;
-  return { x: A.x + dx * f + hz * C_LANE_OFF, z: A.z + dz * f - hx * C_LANE_OFF,
+  return { x: A.x + dx * f - hz * C_LANE_OFF, z: A.z + dz * f + hx * C_LANE_OFF,
            heading: Math.atan2(hx, hz), len: len, hx: hx, hz: hz };
 }
 function hCarStep(car, ctx){
