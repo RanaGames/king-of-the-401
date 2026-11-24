@@ -4,6 +4,11 @@
    "file": "test-truck.glb",
    "glbtest": true,
    "note": "GLB PIPELINE TEST ONLY (flag kot401.glbtest, default OFF): stylised low-poly test rig, 2,724 tris, real-metre scale, tractor+trailer in one file. Loaded only when the glbtest flag is on; otherwise this entry is inert and the slot stays procedural. See SPEC.md in the staging folder."
+  },
+  "sysco": {
+   "file": "sysco-model.glb",
+   "syscoMain": true,
+   "note": "MAIN SYSCO MODEL (user's Tripo rig, integrated 2026-11-23): combined aero sleeper tractor + 53 ft dry-van trailer in one GLB, 68,573 tris, authored in the glbtest stored frame (Z-up, +X forward, ground Z=0, kingpin datum at model X=1.20) with tractor/trailer group nodes and Wheel* hub-pivot wheel nodes (wheels spin, steer pair steers). Drives the two AI Sysco haulers as full rigs and the player rig whenever the Sysco livery is active. Loaded by the syscoModel module with a 10 s timeout; any failure falls back silently to the procedural Sysco presentation. Rollback: localStorage kot401.syscomodel = 'off'."
   }
  },
  "nodeContract": {
